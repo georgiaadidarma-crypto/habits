@@ -1,0 +1,6 @@
+{
+  "name": "Vanguard Habit Matrix",
+  "description": "Tactical cyber-dashboard for habit tracking, stat optimization, resource stores, and threat analytics.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

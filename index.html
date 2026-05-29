@@ -1,0 +1,3494 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vanguard Habit Matrix</title>
+    <!-- Tailwind CSS Play CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" />
+    <!-- Lucide Icons Custom Import -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+              display: ["Space Grotesk", "sans-serif"],
+              mono: ["JetBrains Mono", "monospace"],
+            },
+            colors: {
+              cyber: {
+                blue: '#3b82f6',
+                teal: '#06b6d4',
+                pink: '#ec4899',
+                red: '#ef4444',
+                slate: '#1e293b',
+                dark: '#020617',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      /* Glowing and Scifi HUD Effects */
+      .glow-teal {
+        filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.45));
+      }
+      .glow-pink {
+        filter: drop-shadow(0 0 8px rgba(236, 72, 153, 0.45));
+      }
+      .glow-blue {
+        filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.45));
+      }
+      .glow-red {
+        filter: drop-shadow(0 0 8px rgba(239, 68, 68, 0.45));
+      }
+      .text-glow-teal {
+        text-shadow: 0 0 8px rgba(6, 182, 212, 0.6);
+      }
+      .text-glow-pink {
+        text-shadow: 0 0 8px rgba(236, 72, 153, 0.6);
+      }
+      
+      /* Grid background animated */
+      .cyber-grid {
+        background-color: #030712;
+        background-image: 
+          linear-gradient(rgba(18, 24, 38, 0.4) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(18, 24, 38, 0.4) 1px, transparent 1px);
+        background-size: 20px 20px;
+        background-position: center;
+      }
+
+      /* Custom scrollbars */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #020617;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e293b;
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #3b82f6;
+      }
+
+      /* Scanning lines effect */
+      .scanline {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          to bottom,
+          rgba(255,255,255,0),
+          rgba(255,255,255,0) 50%,
+          rgba(0, 212, 255, 0.03) 50%,
+          rgba(0, 212, 255, 0.03)
+        );
+        background-size: 100% 4px;
+        pointer-events: none;
+      }
+
+      @keyframes scan {
+        0% { transform: translateY(-100%); }
+        100% { transform: translateY(100%); }
+      }
+      .scan-beam {
+        animation: scan 4s linear infinite;
+      }
+
+      @keyframes radar-pulse {
+        0% { transform: scale(0.9); opacity: 0.1; }
+        50% { opacity: 0.5; }
+        100% { transform: scale(1.6); opacity: 0; }
+      }
+      .radar-wave {
+        animation: radar-pulse 3s infinite linear;
+      }
+
+      /* Screen shake for interactive responses */
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-4px); }
+        75% { transform: translateX(4px); }
+      }
+      .anim-shake {
+        animation: shake 0.2s ease-in-out 2;
+      }
+
+      /* Custom checkbox cyber toggle */
+      .cyber-checkbox:checked + label .checkbox-box {
+        background-color: #06b6d4;
+        border-color: #06b6d4;
+        box-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+      }
+
+      /* LIGHT THEME ACCESSIBILITY OVERRIDES */
+      body.light-theme {
+        background-color: #f1f5f9;
+        background-image: 
+          linear-gradient(rgba(148, 163, 184, 0.15) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.15) 1px, transparent 1px);
+        background-size: 20px 20px;
+        color: #0f172a;
+      }
+      body.light-theme #phone-shell {
+        background-color: rgba(255, 255, 255, 0.98);
+        border-color: #cbd5e1;
+        box-shadow: 0 25px 50px -12px rgba(148, 163, 184, 0.4);
+      }
+      body.light-theme header,
+      body.light-theme nav {
+        background-color: rgba(248, 250, 252, 0.96);
+        border-color: #e2e8f0;
+      }
+      body.light-theme .text-slate-100 {
+        color: #1e293b;
+      }
+      body.light-theme .text-slate-200 {
+        color: #334155;
+      }
+      body.light-theme .text-slate-300 {
+        color: #475569;
+      }
+      body.light-theme .text-slate-400 {
+        color: #64748b;
+      }
+      body.light-theme .text-slate-500 {
+        color: #94a3b8;
+      }
+      body.light-theme .text-white {
+        color: #0f172a;
+      }
+      body.light-theme .bg-slate-950,
+      body.light-theme .bg-slate-950\/90,
+      body.light-theme .bg-slate-950\/95,
+      body.light-theme .bg-slate-950\/80,
+      body.light-theme .bg-slate-950\/40 {
+        background-color: #ffffff;
+      }
+      body.light-theme .bg-slate-900,
+      body.light-theme .bg-slate-900\/70,
+      body.light-theme .bg-slate-900\/60,
+      body.light-theme .bg-slate-900\/40 {
+        background-color: #f1f5f9;
+        border-color: #e2e8f0;
+      }
+      body.light-theme .border-slate-900,
+      body.light-theme .border-slate-800,
+      body.light-theme .border-slate-850 {
+        border-color: #cbd5e1;
+      }
+      body.light-theme .bg-black,
+      body.light-theme .bg-black\/85,
+      body.light-theme .bg-slate-950\/30 {
+        background-color: #f8fafc;
+        border-color: #cbd5e1;
+      }
+      body.light-theme #content-pane {
+        background-color: #ffffff;
+      }
+      body.light-theme .text-glow-teal {
+        text-shadow: 0 0 6px rgba(6, 182, 212, 0.35);
+      }
+      body.light-theme .text-cyan-400 {
+        color: #0891b2;
+      }
+      body.light-theme .text-purple-400 {
+        color: #7c3aed;
+      }
+    </style>
+  </head>
+  <body class="cyber-grid min-h-screen text-slate-100 font-sans flex items-center justify-center p-0 md:p-6 overflow-x-hidden select-none">
+    
+    <!-- Outer starry particles / grids for premium Desktop browser representation -->
+    <div class="fixed inset-0 pointer-events-none opacity-30 bg-[radial-gradient(#1e1b4b_1px,transparent_1px)] [background-size:16px_16px] hidden md:block"></div>
+
+    <!-- MAIN PHONE CONTAINER (The Phone Shell / Centered Column Layout) -->
+    <div id="phone-shell" class="w-full max-w-md bg-slate-950/95 md:rounded-[40px] md:border-4 md:border-slate-800 md:shadow-2xl h-screen md:h-[920px] relative flex flex-col overflow-hidden backdrop-blur-md">
+      
+      <!-- Top Bezel Speaker & Camera for premium Phone vibe -->
+      <div class="absolute top-0 inset-x-0 h-6 bg-slate-950 flex items-center justify-center z-50 pointer-events-none select-none">
+        <div class="w-20 h-3.5 bg-slate-900 rounded-full flex items-center justify-between px-3">
+          <div class="w-1.5 h-1.5 rounded-full bg-slate-800"></div>
+          <div class="w-8 h-1 bg-slate-800 rounded-full"></div>
+        </div>
+      </div>
+      
+      <!-- Scanline overlays -->
+      <div class="scanline absolute inset-0 z-40 pointer-events-none opacity-50"></div>
+
+      <!-- GLOWING TOP STATUS INFO HEADER (Fixed Elements) -->
+      <header class="pt-8 pb-3 px-4 bg-slate-950/90 border-b border-slate-900 flex items-center justify-between z-40 select-none">
+        <!-- Left: Avatar & Game Title -->
+        <div class="flex items-center space-x-2.5 cursor-pointer" onclick="switchTab('profile')">
+          <div class="relative group active:scale-95 duration-100">
+            <div id="header-avatar-container" class="w-9 h-9 rounded-full border border-cyan-500 overflow-hidden bg-black flex items-center justify-center shadow-[0_0_8px_rgba(6,182,212,0.3)] relative">
+              <i id="user-avatar-placeholder" class="fa-solid fa-robot text-cyan-400 text-sm"></i>
+            </div>
+            <!-- Outer dynamic status glow -->
+            <span class="absolute -bottom-0.5 -right-0.5 flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
+            </span>
+          </div>
+          <div>
+            <div class="text-[10px] font-mono font-black tracking-wider text-slate-100 uppercase" style="letter-spacing: 0.05em;">VANGUARD HABIT MATRIX</div>
+            <div class="text-[8px] font-mono tracking-widest text-[#06b6d4]/90 uppercase font-bold mt-0.5" id="user-rank-label">LVL 1 CADET</div>
+          </div>
+        </div>
+
+        <!-- Right: XP Total & Diamonds Balance -->
+        <div class="flex items-center space-x-3.5">
+          <!-- XP block -->
+          <div class="text-right">
+            <span class="block text-[7px] font-mono text-slate-500 leading-none uppercase">TOTAL STATUS</span>
+            <span class="text-xs font-mono font-black text-cyan-400 leading-none block mt-1" id="header-xp">0 XP</span>
+          </div>
+          <!-- Divider -->
+          <div class="h-6 w-[1px] bg-slate-800"></div>
+          <!-- Crystals block -->
+          <div class="text-right">
+            <span class="block text-[7px] font-mono text-slate-500 leading-none uppercase">CRYSTALS</span>
+            <span class="text-xs font-mono font-black text-pink-500 leading-none block mt-1" id="header-diamonds">0 🔮</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- FLOATING TOAST ALERTS OVERLAY CONTAINER -->
+      <div id="toast-container" class="absolute top-20 inset-x-4 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+      <!-- MAIN SCROLLABLE DYNAMIC CONTENT CONTAINER -->
+      <main id="content-pane" class="flex-1 overflow-y-auto pt-2 px-4 pb-24 relative select-none">
+        <!-- Rendered Tab Content Appears Dynamically Here via loadCurrentView() -->
+      </main>
+
+      <!-- FIXED SYSTEM BOTTOM NAVIGATION MENU -->
+      <nav class="absolute bottom-0 inset-x-0 bg-slate-950/95 border-t border-slate-900 z-40 px-3 pt-2 pb-5 flex items-center justify-between select-none">
+        
+        <!-- Tab 1: HABITS -->
+        <button id="nav-btn-habits" onclick="switchTab('habits')" class="flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-cyan-400 group active:scale-95 duration-100 relative">
+          <i data-lucide="shield-check" class="w-5.5 h-5.5 transition-all group-hover:scale-110 active:scale-95"></i>
+          <span class="text-[9px] font-mono tracking-wider mt-1 uppercase">HABITS</span>
+          <div class="absolute bottom-0 w-8 h-0.5 bg-cyan-400 rounded-full transition-all duration-300 opacity-100 shadow-teal"></div>
+        </button>
+
+        <!-- Tab 2: STATS -->
+        <button id="nav-btn-stats" onclick="switchTab('stats')" class="flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-slate-400 group active:scale-95 duration-100 relative">
+          <i data-lucide="bar-chart-3" class="w-5.5 h-5.5 transition-all group-hover:scale-110 active:scale-95"></i>
+          <span class="text-[9px] font-mono tracking-wider mt-1 uppercase">STATS</span>
+          <div class="absolute bottom-0 w-8 h-0.5 bg-pink-400 rounded-full transition-all duration-300 opacity-0 bg-transparent"></div>
+        </button>
+
+        <!-- Tab 3: SHOP (The Crystal Store) -->
+        <button id="nav-btn-shop" onclick="switchTab('shop')" class="flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-slate-400 group active:scale-95 duration-100 relative">
+          <i data-lucide="shopping-bag" class="w-5.5 h-5.5 transition-all group-hover:scale-110 active:scale-95"></i>
+          <span class="text-[9px] font-mono tracking-wider mt-1 uppercase">SHOP</span>
+          <div class="absolute bottom-0 w-8 h-0.5 bg-amber-400 rounded-full transition-all duration-300 opacity-0 bg-transparent"></div>
+        </button>
+
+        <!-- Tab 4: SETTINGS (Theme, Reset, Levels Map & Diagnostics) -->
+        <button id="nav-btn-settings" onclick="switchTab('settings')" class="flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-slate-400 group active:scale-95 duration-100 relative">
+          <i data-lucide="sliders" class="w-5.5 h-5.5 transition-all group-hover:scale-110 active:scale-95"></i>
+          <span class="text-[9px] font-mono tracking-wider mt-1 uppercase">SETTINGS</span>
+          <div class="absolute bottom-0 w-8 h-0.5 bg-emerald-400 rounded-full transition-all duration-300 opacity-0 bg-transparent"></div>
+        </button>
+
+        <!-- Tab 5: PROFILE (Telemetry Credentials) -->
+        <button id="nav-btn-profile" onclick="switchTab('profile')" class="flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-slate-400 group active:scale-95 duration-100 relative">
+          <i data-lucide="fingerprint" class="w-5.5 h-5.5 transition-all group-hover:scale-110 active:scale-95"></i>
+          <span class="text-[9px] font-mono tracking-wider mt-1 uppercase">PROFILE</span>
+          <div class="absolute bottom-0 w-8 h-0.5 bg-purple-400 rounded-full transition-all duration-300 opacity-0 bg-transparent"></div>
+        </button>
+      </nav>
+
+    </div>
+
+    <!-- FontAwesome Library CDN for rich gaming styles -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <!-- REACIVE JAVASCRIPT APP STATE & INTERACTIVITY ENGINE -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+      // 4. Hardcoded Cloud Persistence Configuration
+      const firebaseConfig = {
+        apiKey: "[PASTE_YOUR_VITE_FIREBASE_API_KEY_HERE]",
+        authDomain: "[PASTE_YOUR_VITE_FIREBASE_AUTH_DOMAIN_HERE]",
+        projectId: "[PASTE_YOUR_VITE_FIREBASE_PROJECT_ID_HERE]",
+        storageBucket: "[PASTE_YOUR_VITE_FIREBASE_STORAGE_BUCKET_HERE]",
+        messagingSenderId: "[PASTE_YOUR_VITE_FIREBASE_MESSAGING_SENDER_ID_HERE]",
+        appId: "[PASTE_YOUR_VITE_FIREBASE_APP_ID_HERE]",
+        databaseId: "[PASTE_YOUR_VITE_FIREBASE_FIRESTORE_DATABASE_ID_HERE]"
+      };
+
+      // Configuration Valid Check (fallback to LocalStorage seamlessly to prevent failure in development/offline modes)
+      const isConfigValid = firebaseConfig.apiKey && 
+                            !firebaseConfig.apiKey.includes("PASTE_YOUR_VITE_FIREBASE") && 
+                            firebaseConfig.apiKey !== "";
+
+      let app = null;
+      let auth = null;
+      let db = null;
+      let googleProvider = null;
+
+      // Dynamic rendering of avatar layered with purchased cosmetic accessories
+      window.renderDynamicAvatarHTML = function(avatarSrc, extraContainerClasses = "", sizeStyle = "home") {
+        if (!storeState || !storeState.inventory) {
+          return `<img src="${avatarSrc}" class="w-full h-full object-contain p-1 rounded-full bg-black">`;
+        }
+        const hasHalo = storeState.inventory.includes("digital_halo");
+        const hasVisor = storeState.inventory.includes("cyber_visor");
+        const hasEP = storeState.inventory.includes("ear_piece");
+
+        // Determine scale classes if halo is owned
+        let bodyWrapperStyle = "";
+        let haloStyle = "";
+        let visorStyle = "";
+        let earPieceStyle = "";
+
+        if (sizeStyle === "profile") {
+          // Large profile box (w-64 h-64)
+          bodyWrapperStyle = hasHalo ? "transform scale-[0.62] translate-y-[22%] transition-all duration-300" : "transform scale-100 translate-y-0 transition-all duration-300";
+          haloStyle = "absolute top-[1%] left-1/2 -translate-x-1/2 w-[68%] h-[36%] object-contain mix-blend-screen z-10 pointer-events-none drop-shadow-[0_0_8px_rgba(236,72,153,0.4)] animate-pulse";
+          visorStyle = "absolute top-[41%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[32%] z-20 pointer-events-none filter drop-shadow-[0_0_6px_rgba(6,182,212,0.7)]";
+          earPieceStyle = "absolute top-[46%] left-[65%] -translate-x-1/2 -translate-y-1/2 w-[22%] z-15 pointer-events-none filter drop-shadow-[0_0_4px_rgba(147,51,234,0.6)]";
+        } else if (sizeStyle === "home") {
+          // Medium home badge (w-10 h-10)
+          bodyWrapperStyle = hasHalo ? "transform scale-[0.62] translate-y-[20%] transition-none" : "transform scale-100 translate-y-0 transition-none";
+          haloStyle = "absolute top-[1%] left-1/2 -translate-x-1/2 w-[70%] h-[36%] object-contain mix-blend-screen z-10 pointer-events-none drop-shadow-[0_0_4px_rgba(236,72,153,0.4)]";
+          visorStyle = "absolute top-[41%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[32%] z-20 pointer-events-none";
+          earPieceStyle = "absolute top-[45%] left-[65%] -translate-x-1/2 -translate-y-1/2 w-[22%] z-15 pointer-events-none";
+        } else {
+          // Small header icon (w-9 h-9)
+          bodyWrapperStyle = hasHalo ? "transform scale-[0.62] translate-y-[18%] transition-none" : "transform scale-100 translate-y-0 transition-none";
+          haloStyle = "absolute top-[0.5px] left-1/2 -translate-x-1/2 w-[72%] h-[36%] object-contain mix-blend-screen z-10 pointer-events-none";
+          visorStyle = "absolute top-[41%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[32%] z-20 pointer-events-none";
+          earPieceStyle = "absolute top-[45%] left-[65%] -translate-x-1/2 -translate-y-1/2 w-[22%] z-15 pointer-events-none";
+        }
+
+        return `
+          <div class="relative w-full h-full bg-black flex items-center justify-center overflow-hidden ${extraContainerClasses}">
+            ${hasHalo ? `<img src="https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779963072/Fix_smudged_lines_design_202605281710_kkgwbl.jpg" alt="Halo" class="${haloStyle}" style="mix-blend-mode: screen;">` : ""}
+            <div class="relative w-full h-full flex items-center justify-center ${bodyWrapperStyle}">
+              <img src="${avatarSrc}" referrerpolicy="no-referrer" class="w-full h-full object-contain p-1 rounded-full bg-black" alt="Character Portrait">
+              ${hasVisor ? `<img src="https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779961787/Refine_image_quality_same_style_202605281544-removebg-preview_bmagls.png" alt="Visor" class="${visorStyle}">` : ""}
+              ${hasEP ? `<img src="https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779961700/Refine_image_make_clear_202605281546-removebg-preview_dowub0.png" alt="Ear Piece" class="${earPieceStyle}">` : ""}
+            </div>
+          </div>
+        `;
+      };
+
+      // Local Fallback State
+      const DEFAULT_PERSISTENCE_KEY = "VANGUARD_HABIT_STATE_01";
+      const defaultState = {
+        user: {
+          uid: "guest_interceptor_00",
+          displayName: "Guest Interceptor",
+          email: "guest@vanguard.sys",
+          photoURL: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400",
+          level: 2,
+          rank: "VANGUARD OFFICER",
+          xp: 850,
+          maxXp: 1000,
+          crystals: 150,
+          integrity: 75,
+          yesterdayMissed: false,
+          missedHabitsDetails: [],
+          stats: {
+            totalXp: 2450,
+            perfectDays: 12,
+            bestStreak: 14,
+            coinsSpent: 450,
+            targetsMet: 150
+          }
+        },
+        habits: [
+          {
+            id: "journal_rest",
+            title: "Journal and rest (8:30PM - 9:30PM)",
+            desc: "Review logs, disconnect neural channels cleanly",
+            xpReward: 15,
+            hpImpact: 0,
+            crystalsReward: 10,
+            completed: false,
+            badge: "REST",
+            category: "INTEGRITY",
+            streak: 14
+          },
+          {
+            id: "study_review",
+            title: "Study Review (Homework Complete)",
+            desc: "Perform AI photo analysis scan on study sheets or homework documents",
+            xpReward: 15,
+            hpImpact: -3,
+            crystalsReward: 15,
+            completed: false,
+            badge: "INTEL",
+            category: "TRAINING",
+            streak: 8
+          },
+          {
+            id: "train_fencing",
+            title: "Train Fencing (40m)",
+            desc: "Sharpen reflex routines & kinetic blade timing",
+            xpReward: 30,
+            hpImpact: 0,
+            crystalsReward: 20,
+            completed: false,
+            badge: "COMBAT",
+            category: "REFLEX",
+            streak: 12
+          }
+        ],
+        unlockedStoreItems: [],
+        inventory: ["adv_hud_filter", "titanium_rapier_v2"]
+      };
+
+      // Main application current operating state
+      let storeState = { ...defaultState };
+      let currentTab = "habits";
+      let authUser = null;
+
+      // Immersive Interactive Habit Screens States
+      let fencingSecondsLeft = 40 * 60; // 2400 seconds
+      let fencingTimerActive = false;
+      let fencingSpeedMultiplier = 1;
+
+      function getFencingTotalSeconds() {
+        if (storeState && storeState.inventory && storeState.inventory.includes("step_glow_effect")) {
+          return 35 * 60;
+        }
+        return 40 * 60;
+      }
+      let fencingTimerIntervalRef = null;
+      let fencingCueTimeoutRef = null;
+      let currentFencingCue = null;
+      let fencingScoresMatched = 0;
+      let fencingRequiredMatches = 5;
+      let fencingStream = null;
+      let fencingMotionAnimationRef = null;
+      let prevFrameData = null;
+
+      let selectedOCRReportType = null;
+      let ocrScanIsRunning = false;
+
+      let journalTextLength = 0;
+      let journalAIScanIsRunning = false;
+
+      // Initialize Firebase safely
+      if (isConfigValid) {
+        try {
+          app = initializeApp(firebaseConfig);
+          auth = getAuth(app);
+          db = getFirestore(app);
+          googleProvider = new GoogleAuthProvider();
+          console.log("⚓ Tactical Cloud Service Online: Firebase activated.");
+        } catch (err) {
+          console.warn("⚓ Firebase load failed! Activating localized storage protocols.", err);
+        }
+      } else {
+        console.log("⚓ Local Persistence Protocol: Missing credentials. Launching standalone local state sandbox.");
+      }
+
+      // Load initial state from browser sandbox cache or fallback default
+      function loadPersistedState() {
+        try {
+          const cached = localStorage.getItem(DEFAULT_PERSISTENCE_KEY);
+          if (cached) {
+            storeState = JSON.parse(cached);
+            // Deep check to prevent broken schemas
+            if (!storeState.habits || storeState.habits.length === 0) {
+              storeState.habits = [ ...defaultState.habits ];
+            }
+            if (!storeState.inventory) {
+              storeState.inventory = [ ...defaultState.inventory ];
+            }
+          } else {
+            storeState = JSON.parse(JSON.stringify(defaultState));
+          }
+        } catch (e) {
+          storeState = JSON.parse(JSON.stringify(defaultState));
+        }
+
+        // Apply theme settings
+        if (storeState.theme === "light") {
+          document.body.classList.add("light-theme");
+        } else {
+          document.body.classList.remove("light-theme");
+        }
+
+        updateTelemetry();
+      }
+
+      // Save state to localStorage and Firestore if user is authenticated
+      async function saveCurrentState() {
+        try {
+          localStorage.setItem(DEFAULT_PERSISTENCE_KEY, JSON.stringify(storeState));
+          
+          if (db && authUser) {
+            const userDocRef = doc(db, "users", authUser.uid);
+            await setDoc(userDocRef, {
+              xp: storeState.user.xp,
+              level: storeState.user.level,
+              crystals: storeState.user.crystals,
+              integrity: storeState.user.integrity,
+              stats: storeState.user.stats,
+              habits: storeState.habits,
+              inventory: storeState.inventory,
+              displayName: authUser.displayName,
+              photoURL: authUser.photoURL,
+              updatedAt: new Date().toISOString()
+            }, { merge: true });
+          }
+        } catch (e) {
+          console.error("Data tracking persistence warning", e);
+        }
+      }
+
+      // Sword clash / Lightsaber sounding synth helper under Web Audio API
+      window.playSwordClashSound = function() {
+        try {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtx) return;
+          const ctx = new AudioCtx();
+          
+          // Blade sound carrier frequency sweep
+          const osc = ctx.createOscillator();
+          const gainNode = ctx.createGain();
+          
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(120, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.12);
+          osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.55);
+          
+          const filter = ctx.createBiquadFilter();
+          filter.type = "bandpass";
+          filter.frequency.setValueAtTime(650, ctx.currentTime);
+          filter.frequency.exponentialRampToValueAtTime(1600, ctx.currentTime + 0.15);
+          filter.frequency.linearRampToValueAtTime(250, ctx.currentTime + 0.6);
+          filter.Q.value = 12;
+          
+          // White noise generators for clash dust & sound energy
+          const bufferSize = ctx.sampleRate * 0.45;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const chData = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            chData[i] = Math.random() * 2 - 1;
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          
+          const noiseFilter = ctx.createBiquadFilter();
+          noiseFilter.type = "highpass";
+          noiseFilter.frequency.setValueAtTime(1200, ctx.currentTime);
+          noiseFilter.frequency.exponentialRampToValueAtTime(8500, ctx.currentTime + 0.06);
+          noiseFilter.frequency.exponentialRampToValueAtTime(1800, ctx.currentTime + 0.4);
+          
+          const noiseGain = ctx.createGain();
+          
+          // Gain node envelopes
+          gainNode.gain.setValueAtTime(0.001, ctx.currentTime);
+          gainNode.gain.linearRampToValueAtTime(0.35, ctx.currentTime + 0.07);
+          gainNode.gain.exponentialRampToValueAtTime(0.08, ctx.currentTime + 0.22);
+          gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+          
+          noiseGain.gain.setValueAtTime(0.001, ctx.currentTime);
+          noiseGain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.03);
+          noiseGain.gain.exponentialRampToValueAtTime(0.03, ctx.currentTime + 0.2);
+          noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+          
+          // Connections
+          osc.connect(filter);
+          filter.connect(gainNode);
+          gainNode.connect(ctx.destination);
+          
+          noise.connect(noiseFilter);
+          noiseFilter.connect(noiseGain);
+          noiseGain.connect(ctx.destination);
+          
+          osc.start(ctx.currentTime);
+          noise.start(ctx.currentTime);
+          
+          osc.stop(ctx.currentTime + 0.65);
+          noise.stop(ctx.currentTime + 0.65);
+        } catch (e) {
+          console.warn("Audio Context sound failed to play: ", e);
+        }
+      };
+
+      // Skip level override protocol utility
+      window.skipLevelProtocol = function() {
+        if (!storeState || !storeState.user) return;
+        
+        const currentXp = storeState.user.xp;
+        let nextXp = currentXp;
+
+        if (currentXp <= 500) {
+          nextXp = 501;
+        } else if (currentXp <= 1000) {
+          nextXp = 1001;
+        } else if (currentXp <= 2000) {
+          nextXp = 2001;
+        } else if (currentXp <= 3500) {
+          nextXp = 3501;
+        } else {
+          nextXp = currentXp + 1500;
+        }
+
+        // Apply new progression states
+        storeState.user.xp = nextXp;
+        
+        // Play lightsaber sword clash audio effect
+        window.playSwordClashSound();
+
+        // Check level-up evolution and trigger status update
+        checkRankProgression();
+        saveCurrentState();
+        updateTelemetry();
+        
+        // Trigger elegant feedback toast
+        window.triggerToast("⚡ COGNITIVE OVERRIDE: LEVEL SKIPPED SUCCESSFUL!", true);
+        
+        // Refresh current active matrix pane
+        loadCurrentView();
+      };
+
+      // Floating holographic temporary toast trigger
+      window.triggerToast = function(msg, isSuccess = true) {
+        const toastContainer = document.getElementById("toast-container");
+        if (!toastContainer) return;
+        
+        const toast = document.createElement("div");
+        toast.className = `p-3.5 rounded-xl border flex items-center space-x-3 backdrop-blur-md transform transition-all duration-300 translate-y-2 opacity-0 glow-teal active:scale-95 cursor-pointer max-w-sm w-full mx-auto ${
+          isSuccess 
+            ? "bg-slate-900/95 border-emerald-500/50 text-emerald-300" 
+            : "bg-slate-900/95 border-pink-500/50 text-pink-300"
+        }`;
+        
+        const icon = isSuccess ? "check-circle" : "alert-triangle";
+        toast.innerHTML = `
+          <div class="p-1 rounded bg-slate-950/80">
+            <i data-lucide="${icon}" class="w-5 h-5 ${isSuccess ? "text-emerald-400" : "text-pink-400"}"></i>
+          </div>
+          <div class="flex-1 text-xs font-mono select-none">${msg}</div>
+        `;
+        
+        toastContainer.appendChild(toast);
+        lucide.createIcons();
+
+        // Animate inside
+        setTimeout(() => {
+          toast.classList.remove("translate-y-2", "opacity-0");
+        }, 30);
+
+        // Slide out
+        setTimeout(() => {
+          toast.classList.add("-translate-y-2", "opacity-0");
+          setTimeout(() => {
+            toast.remove();
+          }, 300);
+        }, 3500);
+      };
+
+      // Screen shake modifier for tactile alerts
+      function triggerScreenShake() {
+        const phone = document.getElementById("phone-shell");
+        if (!phone) return;
+        phone.classList.add("anim-shake");
+        setTimeout(() => {
+          phone.classList.remove("anim-shake");
+        }, 400);
+      }
+
+      // Render top header live status values
+      function updateTelemetry() {
+        const user = storeState.user;
+        const rankInfo = window.getRankInfo(user.xp);
+        
+        // Dynamic stats checks
+        const badgeEl = document.getElementById("user-rank-label");
+        const xpEl = document.getElementById("header-xp");
+        const diamondsEl = document.getElementById("header-diamonds");
+        
+        if (badgeEl) badgeEl.textContent = `LVL ${rankInfo.level} ${rankInfo.rank}`;
+        if (xpEl) xpEl.textContent = `${user.xp || 0} XP`;
+        if (diamondsEl) diamondsEl.textContent = `${user.crystals || 0} 🔮`;
+
+        // Handle profile avatar imagery with custom layers
+        const avatarContainer = document.getElementById("header-avatar-container");
+        if (avatarContainer) {
+          let avatarSrc = user.photoURL;
+          if (!avatarSrc || avatarSrc.includes("unsplash.com") || avatarSrc.includes("photo-1535713875002-d1d0cf377fde")) {
+            avatarSrc = rankInfo.img;
+          }
+          avatarContainer.innerHTML = window.renderDynamicAvatarHTML(avatarSrc, "", "header");
+        }
+      }
+
+      // Get Rank Information helper
+      window.getRankInfo = function(xp) {
+        if (xp <= 500) {
+          return {
+            level: 1,
+            rank: "CADET",
+            minXp: 0,
+            maxXp: 500,
+            text: "TO OFFICER LEVEL DIRECTIVES",
+            img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939713/Screenshot_2026-05-28_at_10.41.20_pkihmu.png"
+          };
+        } else if (xp <= 1000) {
+          return {
+            level: 2,
+            rank: "OFFICER",
+            minXp: 501,
+            maxXp: 1000,
+            text: "TO COMBAT VANGUARD CLEARANCE",
+            img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940296/Screenshot_2026-05-28_at_10.51.08_xn5qty.png"
+          };
+        } else if (xp <= 2000) {
+          return {
+            level: 3,
+            rank: "COMBAT VANGUARD",
+            minXp: 1001,
+            maxXp: 2000,
+            text: "TO FULL VANGUARD PROMOTION",
+            img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939888/1779939875766_rq9iv0.png"
+          };
+        } else if (xp <= 3500) {
+          return {
+            level: 4,
+            rank: "FULL VANGUARD",
+            minXp: 2001,
+            maxXp: 3500,
+            text: "TO TRANSCENDENT SINGULARITY",
+            img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939741/Screenshot_2026-05-28_at_10.42.05_uaixxb.png"
+          };
+        } else {
+          return {
+            level: 5,
+            rank: "TRANSCENDENT SINGULARITY",
+            minXp: 3501,
+            maxXp: 5000,
+            text: "MAXIMUM EVOLUTION CLEARED",
+            img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940232/Image_2_ux2x45.png"
+          };
+        }
+      };
+
+      // Check level-up and update status indicators
+      function checkRankProgression() {
+        const currentXp = storeState.user.xp;
+        const rankInfo = window.getRankInfo(currentXp);
+        
+        const oldLevel = storeState.user.level;
+        storeState.user.level = rankInfo.level;
+        storeState.user.rank = "VANGUARD " + rankInfo.rank;
+        storeState.user.maxXp = rankInfo.maxXp;
+        
+        if (!storeState.user.stats) {
+          storeState.user.stats = {};
+        }
+        storeState.user.stats.totalXp = currentXp;
+
+        if (oldLevel && rankInfo.level > oldLevel) {
+          window.triggerToast(`⚡ RANK EVOLUTION! Promoted to Level 0${rankInfo.level}: ${rankInfo.rank}!`, true);
+          storeState.user.crystals += 150;
+        }
+        
+        // Handle sync date back-compat placeholder
+        if (!storeState.lastResetDate) {
+          storeState.lastResetDate = new Date().toDateString();
+        }
+        if (storeState.user.yesterdayMissed === undefined) {
+          storeState.user.yesterdayMissed = false;
+        }
+        if (!storeState.user.missedHabitsDetails) {
+          storeState.user.missedHabitsDetails = [];
+        }
+
+        updateTelemetry();
+      }
+
+      // Daily Reset Triggers & Multi-Habit Status resets
+      window.triggerDailyReset = function(todayStr = null) {
+        const today = todayStr || new Date().toDateString();
+        
+        const missedHabits = storeState.habits.filter(h => !h.completed);
+        const totalHabits = storeState.habits.length;
+        const completedCount = totalHabits - missedHabits.length;
+        
+        const currentCumulativeXp = storeState.user.xp;
+        let penaltyPerHabit = 50;
+        let enemyName = "SCREEN DEMON";
+        if (currentCumulativeXp > 1500) {
+          penaltyPerHabit = 400;
+          enemyName = "SLOTH TITAN";
+        } else if (currentCumulativeXp > 500) {
+          penaltyPerHabit = 200;
+          enemyName = "INTERCEPTOR UNIT";
+        }
+        
+        let totalPenalty = 0;
+        if (missedHabits.length > 0) {
+          totalPenalty = missedHabits.length * penaltyPerHabit;
+          storeState.user.xp = Math.max(0, storeState.user.xp - totalPenalty);
+          storeState.user.yesterdayMissed = true;
+          storeState.user.missedHabitsDetails = missedHabits.map(h => h.title);
+          
+          missedHabits.forEach(h => {
+            h.streak = 0;
+          });
+          
+          window.triggerToast(`⚠️ DAILY RESET: You missed ${missedHabits.length} habits! ${enemyName} inflicted -${totalPenalty} XP penalty!`, false);
+        } else {
+          storeState.user.yesterdayMissed = false;
+          storeState.user.missedHabitsDetails = [];
+          if (!storeState.user.stats) storeState.user.stats = {};
+          storeState.user.stats.perfectDays = (storeState.user.stats.perfectDays || 0) + 1;
+          window.triggerToast(`🏆 PERFECT DAY SECURED! All objectives met, check streaks!`, true);
+        }
+        
+        // Check best streak progression
+        storeState.habits.forEach(h => {
+          if (h.completed) {
+            if (!storeState.user.stats) storeState.user.stats = {};
+            if (h.streak > (storeState.user.stats.bestStreak || 0)) {
+              storeState.user.stats.bestStreak = h.streak;
+            }
+          }
+        });
+
+        // Reset all completing states
+        storeState.habits.forEach(h => {
+          h.completed = false;
+        });
+        
+        storeState.lastResetDate = today;
+        checkRankProgression();
+        saveCurrentState();
+        updateTelemetry();
+        loadCurrentView();
+      };
+
+      // Objective sub-routine selections & Interactive Training Modules
+      window.handleObjectiveSelect = function(id) {
+        if (id === "train_fencing") {
+          window.switchTab("fencing_timer");
+        } else if (id === "study_review") {
+          window.switchTab("study_ocr");
+        } else if (id === "journal_rest") {
+          window.switchTab("journal_ai");
+        } else {
+          window.toggleObjectiveCompletion(id);
+        }
+      };
+
+      // ⚔️ Fencing reflex timer operations
+      function runFencingSecondsTick() {
+        if (!fencingTimerActive) return;
+        
+        fencingSecondsLeft = Math.max(0, fencingSecondsLeft - (1 * fencingSpeedMultiplier));
+        
+        const displayEl = document.getElementById("fencing-countdown-display");
+        const progressEl = document.getElementById("fencing-timer-progress");
+        
+        if (displayEl) {
+          const mins = Math.floor(fencingSecondsLeft / 60);
+          const secs = fencingSecondsLeft % 60;
+          displayEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+        
+        if (progressEl) {
+          const totalSeconds = getFencingTotalSeconds();
+          const ratio = Math.min(100, ((totalSeconds - fencingSecondsLeft) / totalSeconds) * 100);
+          progressEl.style.width = `${ratio}%`;
+        }
+        
+        if (fencingSecondsLeft <= 0) {
+          fencingSecondsLeft = 0;
+          stopFencingTimer();
+          finalizeFencingSuccess();
+        }
+      }
+
+      // Initialize dynamic motion tracking
+      function startFencingMotionTracking() {
+        const videoEl = document.getElementById("fencing-video");
+        const canvasEl = document.getElementById("fencing-motion-canvas");
+        const placeholderEl = document.getElementById("fencing-camera-placeholder");
+        const hudTelemetryEl = document.getElementById("fencing-hud-telemetry");
+
+        if (!videoEl || !canvasEl) return;
+
+        navigator.mediaDevices.getUserMedia({
+          video: { width: 320, height: 240 }
+        }).then(stream => {
+          fencingStream = stream;
+          videoEl.srcObject = stream;
+          videoEl.classList.remove("hidden");
+          canvasEl.classList.remove("hidden");
+          hudTelemetryEl.classList.remove("hidden");
+          if (placeholderEl) placeholderEl.classList.add("hidden");
+
+          // Run processing loop
+          runFencingMotionDetectionLoop();
+        }).catch(err => {
+          console.error("Camera access denied or failed for Fencing:", err);
+          window.triggerToast("⚠️ SENSOR ERROR: Camera blocked or unavailable. Fallback triggers active.", false);
+        });
+      }
+
+      function runFencingMotionDetectionLoop() {
+        const videoEl = document.getElementById("fencing-video");
+        const canvasEl = document.getElementById("fencing-motion-canvas");
+
+        if (!fencingTimerActive || !videoEl || !canvasEl || !fencingStream) {
+          return;
+        }
+
+        const ctx = canvasEl.getContext("2d");
+        const width = canvasEl.width = 160;
+        const height = canvasEl.height = 120;
+
+        // Offscreen canvas for fast, lightweight processing
+        const offscreenCanvas = document.createElement("canvas");
+        offscreenCanvas.width = 40;
+        offscreenCanvas.height = 30;
+        const offscreenCtx = offscreenCanvas.getContext("2d");
+
+        function processFrame() {
+          if (!fencingTimerActive || !fencingStream) return;
+
+          try {
+            if (videoEl.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+              // 1. Draw frame to hidden offscreen canvas
+              offscreenCtx.drawImage(videoEl, 0, 0, 40, 30);
+              const imgData = offscreenCtx.getImageData(0, 0, 40, 30);
+              const data = imgData.data;
+
+              // 2. Clear visual debug overlay 
+              ctx.clearRect(0, 0, width, height);
+              
+              if (prevFrameData) {
+                let totalPixels = 40 * 30;
+                let movingPixelsCount = 0;
+                let sumX = 0;
+                let sumY = 0;
+
+                // Thresholds for difference and detection
+                const pixelDiffThreshold = 20;
+
+                // 3. Compute absolute differential
+                for (let i = 0; i < data.length; i += 4) {
+                  const rCurrent = data[i];
+                  const gCurrent = data[i+1];
+                  const bCurrent = data[i+2];
+
+                  const rPrev = prevFrameData[i];
+                  const gPrev = prevFrameData[i+1];
+                  const bPrev = prevFrameData[i+2];
+
+                  const brightnessCurrent = (rCurrent + gCurrent + bCurrent) / 3;
+                  const brightnessPrev = (rPrev + gPrev + bPrev) / 3;
+
+                  const diff = Math.abs(brightnessCurrent - brightnessPrev);
+
+                  if (diff > pixelDiffThreshold) {
+                    movingPixelsCount++;
+                    const pixelIndex = i / 4;
+                    const x = pixelIndex % 40;
+                    const y = Math.floor(pixelIndex / 40);
+                    sumX += x;
+                    sumY += y;
+
+                    // Draw green tracking overlay cells
+                    ctx.fillStyle = "rgba(6, 182, 212, 0.25)";
+                    ctx.fillRect(x * 4, y * 4, 3.5, 3.5);
+                  }
+                }
+
+                // Compute telemetry metrics
+                const motionRatio = movingPixelsCount / totalPixels;
+                const motionPercent = Math.round(motionRatio * 100);
+
+                let centroidX = movingPixelsCount > 10 ? sumX / movingPixelsCount : 20;
+                const normalizedX = (centroidX - 20) * 4; // Shift relative to center: -80px to +80px
+
+                // Update HUD Telemetry text
+                const energyHud = document.getElementById("telemetry-energy");
+                const flowXHud = document.getElementById("telemetry-flow-x");
+                const velocityHud = document.getElementById("telemetry-velocity");
+
+                if (energyHud) energyHud.textContent = `${motionPercent}%`;
+                if (flowXHud) flowXHud.textContent = `${normalizedX > 0 ? '+' : ''}${normalizedX.toFixed(1)}px`;
+
+                // Render radar tracking target centroid
+                if (movingPixelsCount > 10) {
+                  ctx.strokeStyle = "rgba(236, 72, 153, 0.8)";
+                  ctx.lineWidth = 1;
+                  ctx.beginPath();
+                  ctx.arc(centroidX * 4, (sumY / movingPixelsCount) * 4, 6, 0, Math.PI * 2);
+                  ctx.stroke();
+
+                  ctx.strokeStyle = "rgba(6, 182, 212, 0.45)";
+                  ctx.beginPath();
+                  ctx.moveTo(centroidX * 4, 0);
+                  ctx.lineTo(centroidX * 4, height);
+                  ctx.moveTo(0, (sumY / movingPixelsCount) * 4);
+                  ctx.lineTo(width, (sumY / movingPixelsCount) * 4);
+                  ctx.stroke();
+                }
+
+                // 4. MOTION METRIC EVALUATION
+                if (currentFencingCue && motionPercent > 6) {
+                  let triggerSecured = false;
+
+                  if (currentFencingCue === "PARRY") {
+                    // Side sweeping gesture: horizontal centroid deflection
+                    if (Math.abs(normalizedX) > 18 && motionPercent > 12) {
+                      triggerSecured = true;
+                    }
+                  } else if (currentFencingCue === "ATTACK") {
+                    // Lunge forward or sharp sweep: massive energy spike
+                    if (motionPercent > 32) {
+                      triggerSecured = true;
+                    }
+                  } else if (currentFencingCue === "RETREAT") {
+                    // Stepping back: centroid goes high (retreat away) and energy is moderate
+                    const avgY = sumY / movingPixelsCount;
+                    if (motionPercent < 22 && avgY < 13) {
+                      triggerSecured = true;
+                    }
+                  }
+
+                  if (velocityHud) {
+                    if (motionPercent > 28) {
+                      velocityHud.textContent = "ATTACK SURGE";
+                      velocityHud.className = "text-rose-500 font-bold";
+                    } else if (Math.abs(normalizedX) > 15) {
+                      velocityHud.textContent = "PARRY SWEEP";
+                      velocityHud.className = "text-cyan-400 font-bold";
+                    } else {
+                      velocityHud.textContent = "KINETIC FEED";
+                      velocityHud.className = "text-emerald-400";
+                    }
+                  }
+
+                  if (triggerSecured) {
+                    window.handleFencingAction(currentFencingCue);
+                  }
+                } else {
+                  if (velocityHud) {
+                    velocityHud.textContent = "STABLE";
+                    velocityHud.className = "text-slate-500";
+                  }
+                }
+              }
+
+              prevFrameData = data;
+            }
+          } catch (err) {
+            console.error("Frame processing exception:", err);
+          }
+
+          fencingMotionAnimationRef = requestAnimationFrame(processFrame);
+        }
+
+        // Start animation frame loop
+        prevFrameData = null;
+        fencingMotionAnimationRef = requestAnimationFrame(processFrame);
+      }
+
+      window.toggleFencingTimer = function() {
+        if (fencingSecondsLeft <= 0) {
+          fencingSecondsLeft = getFencingTotalSeconds();
+        }
+
+        fencingTimerActive = !fencingTimerActive;
+        const toggleBtn = document.getElementById("fencing-toggle-btn");
+
+        if (fencingTimerActive) {
+          if (toggleBtn) {
+            toggleBtn.innerHTML = `<i class="fa-solid fa-pause"></i> PAUSE`;
+            toggleBtn.className = "px-3.5 py-1.5 rounded-lg bg-pink-950/80 border border-pink-500/30 text-pink-400 text-[10px] font-mono font-bold active:scale-95 duration-100 flex items-center gap-1";
+          }
+          
+          if (!fencingTimerIntervalRef) {
+            fencingTimerIntervalRef = setInterval(runFencingSecondsTick, 1000);
+          }
+          
+          triggerNextFencingCue();
+          startFencingMotionTracking();
+          window.triggerToast("⚔️ Cybernetic Reflex radar initiated!");
+        } else {
+          stopFencingTimer();
+          window.triggerToast("☕ Motion scanner system paused.");
+        }
+      };
+
+      function stopFencingTimer() {
+        fencingTimerActive = false;
+        const toggleBtn = document.getElementById("fencing-toggle-btn");
+        if (toggleBtn) {
+          toggleBtn.innerHTML = `<i class="fa-solid fa-play"></i> START`;
+          toggleBtn.className = "px-3.5 py-1.5 rounded-lg bg-cyan-950/85 border border-cyan-600/30 text-cyan-400 text-[10px] font-mono font-bold active:scale-95 duration-100 flex items-center gap-1";
+        }
+        if (fencingTimerIntervalRef) {
+          clearInterval(fencingTimerIntervalRef);
+          fencingTimerIntervalRef = null;
+        }
+        if (fencingCueTimeoutRef) {
+          clearTimeout(fencingCueTimeoutRef);
+          fencingCueTimeoutRef = null;
+        }
+        currentFencingCue = null;
+
+        // stop camera tracks and loops
+        if (fencingStream) {
+          fencingStream.getTracks().forEach(track => track.stop());
+          fencingStream = null;
+        }
+        if (fencingMotionAnimationRef) {
+          cancelAnimationFrame(fencingMotionAnimationRef);
+          fencingMotionAnimationRef = null;
+        }
+        prevFrameData = null;
+
+        // hide display references
+        const videoEl = document.getElementById("fencing-video");
+        const canvasEl = document.getElementById("fencing-motion-canvas");
+        const placeholderEl = document.getElementById("fencing-camera-placeholder");
+        const hudTelemetryEl = document.getElementById("fencing-hud-telemetry");
+
+        if (videoEl) videoEl.classList.add("hidden");
+        if (canvasEl) canvasEl.classList.add("hidden");
+        if (hudTelemetryEl) hudTelemetryEl.classList.add("hidden");
+        if (placeholderEl) placeholderEl.classList.remove("hidden");
+
+        updateFencingCueDisplay();
+      }
+
+      window.setFencingTimeSpeed = function(multiplier) {
+        fencingSpeedMultiplier = multiplier;
+        window.triggerToast(`⏩ Chronos Matrix Overclocked to ${multiplier}x!`);
+        const ffBtn = document.getElementById("ff-btn");
+        if (ffBtn) {
+          ffBtn.textContent = `⏩ FF (${multiplier}x ACTIVE)`;
+          ffBtn.className = "px-2 py-1 rounded-lg bg-cyan-950 text-cyan-400 text-[8px] font-mono border border-cyan-500/30";
+        }
+      };
+
+      window.fencingInstantComplete = function() {
+        stopFencingTimer();
+        finalizeFencingSuccess("FAST COMPLETE BYPASS");
+      };
+
+      function triggerNextFencingCue() {
+        if (!fencingTimerActive) return;
+
+        const cues = ["ATTACK", "PARRY", "RETREAT"];
+        currentFencingCue = cues[Math.floor(Math.random() * cues.length)];
+        
+        updateFencingCueDisplay();
+        
+        if (fencingCueTimeoutRef) clearTimeout(fencingCueTimeoutRef);
+        fencingCueTimeoutRef = setTimeout(() => {
+          if (fencingTimerActive && currentFencingCue) {
+            window.triggerToast(`❌ CUE MISSED: React faster next time!`, false);
+            triggerScreenShake();
+            currentFencingCue = null;
+            updateFencingCueDisplay();
+            
+            fencingCueTimeoutRef = setTimeout(triggerNextFencingCue, 3000);
+          }
+        }, 3000);
+      }
+
+      function updateFencingCueDisplay() {
+        const promptEl = document.getElementById("fencing-cue-prompt");
+        const feedbackEl = document.getElementById("fencing-feedback-bar");
+        const scanlineEl = document.getElementById("fencing-scanline");
+
+        if (promptEl) {
+          if (!fencingTimerActive) {
+            promptEl.innerHTML = `<div class="text-slate-500 text-xs font-mono">STANDBY. PRESS "START" TO INITIALIZE SENSOR GRID.</div>`;
+            if (scanlineEl) scanlineEl.classList.add("hidden");
+          } else if (currentFencingCue) {
+            if (scanlineEl) scanlineEl.classList.remove("hidden");
+            
+            let color = "text-rose-500 glow-red";
+            if (currentFencingCue === "PARRY") color = "text-cyan-400 glow-teal";
+            if (currentFencingCue === "RETREAT") color = "text-amber-400 glow-blue";
+
+            promptEl.innerHTML = `
+              <div class="text-[10px] uppercase font-mono tracking-widest text-slate-400 mb-1">CUE SIGNAL DETECTED:</div>
+              <div class="text-2xl font-display font-black uppercase tracking-wider ${color} animate-bounce">${currentFencingCue}!</div>
+              <div class="text-[9px] font-mono text-pink-400 mt-2">TAP KEY BELOW INSTANTLY!</div>
+            `;
+          } else {
+            if (scanlineEl) scanlineEl.classList.add("hidden");
+            promptEl.innerHTML = `
+               <div class="text-slate-400 text-xs font-mono animate-pulse">
+                <i class="fa-solid fa-hourglass-half text-cyan-400 mr-1 animate-spin"></i> PREPARING NEXT SIGNAL CUE...
+               </div>
+            `;
+          }
+        }
+
+        if (feedbackEl) {
+          feedbackEl.classList.remove("hidden");
+          feedbackEl.innerHTML = `
+            <span class="text-emerald-400 font-bold">TACTICAL INTEGRATION: ${fencingScoresMatched} / ${fencingRequiredMatches} ROUNDS SYNCHRONIZED</span>
+          `;
+        }
+      }
+
+      window.handleFencingAction = function(action) {
+        if (!fencingTimerActive) {
+          window.triggerToast("Start reflex clock first!", false);
+          return;
+        }
+
+        if (!currentFencingCue) {
+          window.triggerToast("No command detected in buffer!", false);
+          triggerScreenShake();
+          return;
+        }
+
+        if (action === currentFencingCue) {
+          fencingScoresMatched += 1;
+          window.triggerToast(`🎯 MATCH SECURED: Correct swipe! [${fencingScoresMatched}/${fencingRequiredMatches}]`, true);
+          
+          currentFencingCue = null;
+          updateFencingCueDisplay();
+          
+          if (fencingCueTimeoutRef) clearTimeout(fencingCueTimeoutRef);
+          
+          if (fencingScoresMatched >= fencingRequiredMatches) {
+            stopFencingTimer();
+            finalizeFencingSuccess();
+          } else {
+            fencingCueTimeoutRef = setTimeout(triggerNextFencingCue, 1500);
+          }
+        } else {
+          window.triggerToast(`❌ TELEMETRY FAULT: Decrypted wrong swipe feedback!`, false);
+          triggerScreenShake();
+          currentFencingCue = null;
+          updateFencingCueDisplay();
+          if (fencingCueTimeoutRef) clearTimeout(fencingCueTimeoutRef);
+          
+          fencingCueTimeoutRef = setTimeout(triggerNextFencingCue, 2000);
+        }
+      };
+
+      function finalizeFencingSuccess(mode = "TELEMETRY SYNCED") {
+        fencingScoresMatched = 0;
+        
+        const habit = storeState.habits.find(h => h.id === "train_fencing");
+        if (habit && !habit.completed) {
+          habit.completed = true;
+          storeState.user.xp += habit.xpReward;
+          storeState.user.crystals += habit.crystalsReward;
+          storeState.user.stats.totalXp += habit.xpReward;
+          storeState.user.stats.targetsMet += 1;
+          
+          const totalObj = storeState.habits.length;
+          const completedObj = storeState.habits.filter(h => h.completed).length;
+          storeState.user.integrity = Math.floor((completedObj / totalObj) * 100);
+          
+          window.playSwordClashSound();
+          checkRankProgression();
+          saveCurrentState();
+        }
+
+        window.triggerToast(`🛡️ ${mode}: Added Fencing rewards! +30 XP, +20 Gems!`, true);
+        fencingSecondsLeft = getFencingTotalSeconds();
+        
+        setTimeout(() => {
+          window.switchTab("habits");
+        }, 1500);
+      }
+
+      // 📝 Study review OCR camera snapshots and file upload scanner routines
+      let ocrStream = null;
+      let selectedOcrBase64 = null;
+
+      window.startOcrCamera = function() {
+        const videoEl = document.getElementById("ocr-video");
+        const placeholderEl = document.getElementById("ocr-camera-placeholder");
+        const previewEl = document.getElementById("ocr-uploaded-preview");
+
+        if (!videoEl) return;
+
+        navigator.mediaDevices.getUserMedia({
+          video: { width: 640, height: 480, facingMode: "environment" }
+        }).then(stream => {
+          ocrStream = stream;
+          videoEl.srcObject = stream;
+          videoEl.classList.remove("hidden");
+          if (placeholderEl) placeholderEl.classList.add("hidden");
+          if (previewEl) previewEl.classList.add("hidden");
+          selectedOcrBase64 = null;
+
+          window.triggerToast("📷 Document camera initialized. Position your homework securely.");
+        }).catch(err => {
+          console.error("OCR Camera failed to open:", err);
+          window.triggerToast("⚠️ CAM FAILURE: Camera access blocked. Use file upload fallback.", false);
+        });
+      };
+
+      window.stopOcrCamera = function() {
+        if (ocrStream) {
+          ocrStream.getTracks().forEach(track => track.stop());
+          ocrStream = null;
+        }
+        const videoEl = document.getElementById("ocr-video");
+        if (videoEl) videoEl.classList.add("hidden");
+      };
+
+      window.handleOcrFileSelect = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Stop camera if active
+        window.stopOcrCamera();
+
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          selectedOcrBase64 = evt.target.result;
+
+          const previewEl = document.getElementById("ocr-uploaded-preview");
+          const placeholderEl = document.getElementById("ocr-camera-placeholder");
+          
+          if (previewEl) {
+            previewEl.src = selectedOcrBase64;
+            previewEl.classList.remove("hidden");
+          }
+          if (placeholderEl) placeholderEl.classList.add("hidden");
+
+          window.triggerToast("📄 Document file loaded. Ready for AI inspection!");
+        };
+        reader.readAsDataURL(file);
+      };
+
+      window.executeRealOcrScanner = function() {
+        if (ocrScanIsRunning) return;
+
+        let base64Image = selectedOcrBase64;
+        const videoEl = document.getElementById("ocr-video");
+
+        if (!base64Image && ocrStream && videoEl) {
+          try {
+            const canvas = document.createElement("canvas");
+            canvas.width = 640;
+            canvas.height = 480;
+            const ctx = canvas.getContext("2d");
+            ctx.translate(640, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(videoEl, 0, 0, 640, 480);
+            base64Image = canvas.toDataURL("image/jpeg", 0.85);
+          } catch (snapshotErr) {
+            console.error("Capture snapshot failed:", snapshotErr);
+          }
+        }
+
+        if (!base64Image) {
+          window.triggerToast("⚠️ DATA NEEDED: Bind live camera snapshot or upload a document photo first!", false);
+          return;
+        }
+
+        ocrScanIsRunning = true;
+        const scanBtn = document.getElementById("ocr-scan-btn");
+        const logsBox = document.getElementById("ocr-status-logs");
+        const laser = document.getElementById("ocr-laser-banner");
+
+        if (laser) laser.classList.remove("hidden");
+        if (scanBtn) {
+          scanBtn.disabled = true;
+          scanBtn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> ANALYZING SCAN DATA WITH GEMINI AI...`;
+          scanBtn.className = "w-full py-3 rounded-2xl bg-slate-900 border border-slate-800 text-slate-500 font-mono text-xs cursor-not-allowed uppercase flex items-center justify-center";
+        }
+
+        if (logsBox) {
+          logsBox.innerHTML = `<div class="text-[#06b6d4] font-bold">[SYSOCR] OPENING ORBITAL TELEMETRY SECURE SCAN CORES...</div>`;
+          logsBox.scrollTop = logsBox.scrollHeight;
+        }
+
+        setTimeout(() => {
+          if (logsBox) {
+            logsBox.innerHTML += `<div class="text-[#a855f7] mt-1">[SYSOCR] PARSING GLYPH AND TEXTURE GEOMETRIES...</div>`;
+            logsBox.scrollTop = logsBox.scrollHeight;
+          }
+        }, 1100);
+
+        setTimeout(() => {
+          if (logsBox) {
+            logsBox.innerHTML += `<div class="text-[#f43f5e] mt-1">[SYSOCR] SUBMITTING FRAME SNAPSHOT TO GEMINI COGNITION GRID...</div>`;
+            logsBox.scrollTop = logsBox.scrollHeight;
+          }
+        }, 2100);
+
+        fetch("/api/analyze-document", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: base64Image })
+        })
+        .then(res => res.json())
+        .then(data => {
+          ocrScanIsRunning = false;
+          if (laser) laser.classList.add("hidden");
+          window.stopOcrCamera();
+
+          if (scanBtn) {
+            scanBtn.disabled = false;
+            scanBtn.innerHTML = `<i class="fa-solid fa-expand"></i> ANALYZE DOCUMENT INTEL`;
+            scanBtn.className = "w-full text-cyan-400 bg-cyan-950/40 hover:bg-cyan-900/40 py-3 rounded-2xl font-display font-medium text-xs border border-cyan-800/40 tracking-wider shadow duration-100 flex items-center justify-center gap-1.5 cursor-pointer uppercase";
+          }
+
+          if (data.error) {
+            if (logsBox) {
+              logsBox.innerHTML += `
+                <div class="text-pink-500 font-bold mt-2 bg-pink-950/40 p-2.5 border border-pink-500/20 rounded-xl leading-relaxed">
+                  ❌ SCANNER REJECTED: ${data.error}
+                </div>
+              `;
+              logsBox.scrollTop = logsBox.scrollHeight;
+            }
+            window.triggerToast("⚠️ Scan request reported an error", false);
+            return;
+          }
+
+          if (data.documentScanned) {
+            if (logsBox) {
+              logsBox.innerHTML += `
+                <div class="text-emerald-400 font-mono mt-2.5 bg-emerald-950/50 p-3 border border-emerald-500/25 rounded-2xl leading-relaxed text-[10px] text-left">
+                  <div class="font-extrabold pb-1.5 border-b border-emerald-800/30 uppercase flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> INTEL VERIFICATION APPROVED
+                  </div>
+                  <div class="mt-1.5"><span class="text-slate-400">TYPE:</span> ${data.documentType.toUpperCase()}</div>
+                  <div><span class="text-slate-400">CONFIDENCE:</span> ${(data.confidence * 100).toFixed(0)}%</div>
+                  <div class="mt-1 leading-snug"><span class="text-slate-400">AI VISUAL NOTES:</span> ${data.notes}</div>
+                </div>
+              `;
+              logsBox.scrollTop = logsBox.scrollHeight;
+            }
+
+            window.triggerToast("Homework scan accepted! Study review objectives checked successfully.");
+
+            const habit = storeState.habits.find(h => h.id === "study_review");
+            if (habit && !habit.completed) {
+              habit.completed = true;
+              storeState.user.xp += habit.xpReward;
+              storeState.user.crystals += habit.crystalsReward;
+              storeState.user.stats.totalXp += habit.xpReward;
+              storeState.user.stats.targetsMet += 1;
+              
+              const totalObj = storeState.habits.length;
+              const completedObj = storeState.habits.filter(h => h.completed).length;
+              storeState.user.integrity = Math.floor((completedObj / totalObj) * 100);
+              
+              window.playSwordClashSound();
+              checkRankProgression();
+              saveCurrentState();
+            }
+
+            setTimeout(() => {
+              window.switchTab("habits");
+            }, 5000);
+
+          } else {
+            if (logsBox) {
+              logsBox.innerHTML += `
+                <div class="text-pink-400 font-mono mt-2 bg-pink-950/40 p-3 border border-pink-500/20 rounded-2xl leading-normal text-left">
+                  <span class="font-bold block text-pink-550 mb-1">❌ SECTOR SWEEP FAILED: NO VALID DOCUMENT SHOWN</span>
+                  ${data.notes}
+                </div>
+              `;
+              logsBox.scrollTop = logsBox.scrollHeight;
+            }
+            triggerScreenShake();
+            window.triggerToast("⚠️ Homework scan rejected. Check instructions and represent legibly to sensor.", false);
+          }
+        })
+        .catch(err => {
+          ocrScanIsRunning = false;
+          if (laser) laser.classList.add("hidden");
+          window.stopOcrCamera();
+
+          if (scanBtn) {
+            scanBtn.disabled = false;
+            scanBtn.innerHTML = `<i class="fa-solid fa-expand"></i> ANALYZE DOCUMENT INTEL`;
+            scanBtn.className = "w-full text-cyan-400 bg-cyan-950/40 hover:bg-cyan-900/40 py-3 rounded-2xl font-display font-medium text-xs border border-cyan-800/40 tracking-wider shadow duration-100 flex items-center justify-center gap-1.5 cursor-pointer uppercase";
+          }
+
+          if (logsBox) {
+            logsBox.innerHTML += `
+              <div class="text-pink-500 font-bold mt-2 bg-pink-950/40 p-2.5 border border-pink-500/20 rounded-xl leading-relaxed">
+                ❌ METROPOLIS CONNECTION FAIL: Unable to reach GenAI verification server. Check your token key.
+              </div>
+            `;
+            logsBox.scrollTop = logsBox.scrollHeight;
+          }
+          console.error("GenAI endpoint transmission error:", err);
+          window.triggerToast("⚠️ Data transmission error while processing photo scan.", false);
+        });
+      };
+
+      // ✍️ Journal entry Text AI scanner logistics
+      window.checkJournalTextDetected = function() {
+        const text = document.getElementById("journal-text-entry").value;
+        const statusInd = document.getElementById("journal-status-indicator");
+        const parseBtn = document.getElementById("journal-ai-btn");
+
+        if (text && text.trim().length > 0) {
+          if (statusInd) {
+            statusInd.textContent = `[ STATUS: CHARACTER DETECTED - ${text.length} LETTERS ]`;
+            statusInd.className = "text-emerald-400 font-bold uppercase select-none";
+          }
+          if (parseBtn) {
+            parseBtn.disabled = false;
+            parseBtn.className = "w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-slate-100 hover:from-purple-500 hover:to-pink-500 py-3 rounded-2xl font-display font-medium text-xs border border-purple-400/40 tracking-wider shadow-lg active:scale-95 duration-100 uppercase cursor-pointer";
+          }
+        } else {
+          if (statusInd) {
+            statusInd.textContent = `[ NO CHARACTERS DETECTED ]`;
+            statusInd.className = "text-pink-400 font-bold uppercase select-none";
+          }
+          if (parseBtn) {
+            parseBtn.disabled = true;
+            parseBtn.className = "w-full mt-4 bg-slate-800 text-slate-500 py-3 rounded-2xl font-display font-bold text-xs border border-slate-700/20 cursor-not-allowed";
+          }
+        }
+      };
+
+      window.executeSimulatedJournalParser = function() {
+        const entry = document.getElementById("journal-text-entry").value;
+        if (!entry || entry.trim().length === 0) return;
+        if (journalAIScanIsRunning) return;
+        
+        journalAIScanIsRunning = true;
+
+        const parseBtn = document.getElementById("journal-ai-btn");
+        const logsBox = document.getElementById("journal-ai-status-logs");
+        const scanline = document.getElementById("journal-scanline");
+
+        if (scanline) scanline.classList.remove("hidden");
+        if (parseBtn) {
+          parseBtn.disabled = true;
+          parseBtn.className = "w-full mt-4 bg-slate-800 text-slate-500 py-3 rounded-2xl font-display font-bold text-xs border border-slate-700/20 cursor-not-allowed";
+          parseBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> INTERPRETING NATURAL SIGNAL ALCHEMY...`;
+        }
+
+        if (logsBox) {
+          logsBox.innerHTML = `<div class="text-purple-400 font-bold">[MIND_AI] BOOTING TEXT AI SEMANTIC INTERPRETER...</div>`;
+        }
+
+        const steps = [
+          { text: "[MIND_AI] SEGMENTING PARAGRAPH BOUNDARY COGNITIONS...", delay: 800 },
+          { text: `[MIND_AI] EXTRACTING SEMANTIC SIGNALS: Found character buffer with ${entry.length} elements.`, delay: 1500 },
+          { text: "[MIND_AI] ESTIMATING MIND HABIT COMPLIANCE SCORE: 100% (Logs Written Successfully).", delay: 2200 },
+          { text: "[MIND_AI] DEPLOYING GLITCH TOXIN NEURAL DETOXIFICATION OVERLAY...", delay: 3000 }
+        ];
+
+        steps.forEach(step => {
+          setTimeout(() => {
+            if (logsBox) {
+              logsBox.innerHTML += `<div class="mt-1">${step.text}</div>`;
+              logsBox.scrollTop = logsBox.scrollHeight;
+            }
+          }, step.delay);
+        });
+
+        setTimeout(() => {
+          journalAIScanIsRunning = false;
+          if (scanline) scanline.classList.add("hidden");
+
+          if (parseBtn) {
+            parseBtn.disabled = false;
+            parseBtn.className = "w-full mt-4 bg-gradient-to-r from-purple-600 to-pink-600 text-slate-100 py-3 rounded-2xl font-display font-medium text-xs border border-purple-400/40 tracking-wider shadow active:scale-95 duration-100 uppercase cursor-pointer";
+            parseBtn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> RE-RUN NEURAL INTERPRETATION`;
+          }
+
+          if (logsBox) {
+            logsBox.innerHTML += `
+              <div class="text-emerald-400 font-bold mt-2.5 bg-emerald-950/40 p-2 border border-emerald-500/20 rounded-lg">
+                ✅ MIND LOG SYNCHRONIZED! Decryption telemetry accepted. Mental rest block secured.
+              </div>
+            `;
+            logsBox.scrollTop = logsBox.scrollHeight;
+          }
+
+          window.triggerToast("Journal Entry Processed! Reward protocol activated.");
+
+          const habit = storeState.habits.find(h => h.id === "journal_rest");
+          if (habit && !habit.completed) {
+            habit.completed = true;
+            storeState.user.xp += habit.xpReward;
+            storeState.user.crystals += habit.crystalsReward;
+            storeState.user.stats.totalXp += habit.xpReward;
+            storeState.user.stats.targetsMet += 1;
+            
+            const totalObj = storeState.habits.length;
+            const completedObj = storeState.habits.filter(h => h.completed).length;
+            storeState.user.integrity = Math.floor((completedObj / totalObj) * 100);
+            
+            window.playSwordClashSound();
+            checkRankProgression();
+            saveCurrentState();
+          }
+
+          setTimeout(() => {
+            window.switchTab("habits");
+          }, 2500);
+
+        }, 3800);
+      };
+
+      // Tactical objectives checkbox toggle
+      window.toggleObjectiveCompletion = function(id) {
+        const habit = storeState.habits.find(h => h.id === id);
+        if (!habit) return;
+
+        // Block manual checkbox marking (completed = false -> completed = true)
+        if (!habit.completed) {
+          window.triggerToast("⚠️ MANUAL STATUS CHANGE DENIED: You must complete the task inside its sandboxed sandbox!", false);
+          setTimeout(() => {
+            if (id === "train_fencing") window.switchTab("fencing_timer");
+            else if (id === "study_review") window.switchTab("study_ocr");
+            else if (id === "journal_rest") window.switchTab("journal_ai");
+          }, 1200);
+          return;
+        }
+
+        habit.completed = false;
+        
+        // Revoke partial values
+        habit.streak = Math.max(0, (habit.streak || 1) - 1);
+        storeState.user.xp = Math.max(0, storeState.user.xp - habit.xpReward);
+        storeState.user.crystals = Math.max(0, storeState.user.crystals - habit.crystalsReward);
+        storeState.user.stats.totalXp = Math.max(0, storeState.user.stats.totalXp - habit.xpReward);
+        storeState.user.stats.targetsMet = Math.max(0, storeState.user.stats.targetsMet - 1);
+
+        // Update integrity
+        const totalObj = storeState.habits.length;
+        const completedObj = storeState.habits.filter(h => h.completed).length;
+        storeState.user.integrity = totalObj > 0 ? Math.floor((completedObj / totalObj) * 100) : 0;
+        
+        window.triggerToast(`[DEACTIVATED] Revoked Objective protocol.`);
+        
+        if (id === "train_fencing") {
+          fencingSecondsLeft = getFencingTotalSeconds();
+        }
+
+        checkRankProgression();
+        saveCurrentState();
+        
+        // Re-view tab
+        loadCurrentView();
+      };
+
+      // Add custom objective item
+      window.submitCustomObjective = function(e) {
+        e.preventDefault();
+        const titleInput = document.getElementById("new-obj-title");
+        const categorySelect = document.getElementById("new-obj-category");
+        const xpInput = document.getElementById("new-obj-xp");
+
+        if (!titleInput || !titleInput.value.trim()) {
+          window.triggerToast("Identify objective protocol name!", false);
+          return;
+        }
+
+        const newId = "custom_" + Date.now();
+        const xp = parseInt(xpInput.value) || 15;
+        const rewardCrystals = Math.round(xp * 0.7);
+
+        const newHabit = {
+          id: newId,
+          title: titleInput.value.trim(),
+          desc: `Custom user-defined operational tactical system duty`,
+          xpReward: xp,
+          hpImpact: 0,
+          crystalsReward: rewardCrystals,
+          completed: false,
+          badge: categorySelect.value.toUpperCase(),
+          category: categorySelect.value
+        };
+
+        storeState.habits.push(newHabit);
+        
+        // Re-calculate integrity
+        const totalObj = storeState.habits.length;
+        const completedObj = storeState.habits.filter(h => h.completed).length;
+        storeState.user.integrity = Math.floor((completedObj / totalObj) * 100);
+
+        window.triggerToast("⚓ Objective logged: Protocol uploaded into local index.", true);
+        saveCurrentState();
+        loadCurrentView();
+      };
+
+      // Delete custom objective
+      window.deleteObjective = function(id) {
+        // Find if completed to deduct
+        const idx = storeState.habits.findIndex(h => h.id === id);
+        if (idx === -1) return;
+
+        const habit = storeState.habits[idx];
+        if (habit.completed) {
+          storeState.user.xp = Math.max(0, storeState.user.xp - habit.xpReward);
+          storeState.user.crystals = Math.max(0, storeState.user.crystals - habit.crystalsReward);
+          storeState.user.stats.targetsMet = Math.max(0, storeState.user.stats.targetsMet - 1);
+        }
+
+        storeState.habits.splice(idx, 1);
+        
+        // Re-calc integrity
+        const totalObj = storeState.habits.length;
+        const completedObj = storeState.habits.filter(h => h.completed).length;
+        storeState.user.integrity = totalObj > 0 ? Math.floor((completedObj / totalObj) * 100) : 0;
+
+        window.triggerToast("Deleted Objective Protocol", false);
+        saveCurrentState();
+        loadCurrentView();
+      };
+
+      // Tactical Store Purchase logic
+      window.purchaseStoreUpgrade = function(itemId, cost) {
+        if (storeState.user.crystals < cost) {
+          triggerScreenShake();
+          window.triggerToast("⚠️ INSUFFICIENT INTEGRITY RESOURCE: Need more Crystals!", false);
+          return;
+        }
+
+        // Check if already purchased
+        if (storeState.inventory.includes(itemId)) {
+          window.triggerToast("Already equipped this item!", false);
+          return;
+        }
+
+        storeState.user.crystals -= cost;
+        storeState.inventory.push(itemId);
+        storeState.user.stats.coinsSpent = (storeState.user.stats.coinsSpent || 0) + cost;
+        window.triggerToast("⚓ ENHANCEMENT ACQUIRED: Equipment initialized!", true);
+        
+        saveCurrentState();
+        loadCurrentView();
+      };
+
+      // Active Scan Simulator (Replaces third party Anthropic APis gracefully)
+      let aiScanLogs = [];
+      let isScanning = false;
+
+      window.initiateOptimisationScan = function() {
+        if (isScanning) return;
+        isScanning = true;
+        
+        const outputConsole = document.getElementById("matrix-scanner-console");
+        const actionBtn = document.getElementById("initiate-scan-btn");
+        const scanRadarWave = document.getElementById("scanner-radar-overlay");
+
+        if (actionBtn) {
+          actionBtn.disabled = true;
+          actionBtn.classList.add("opacity-50", "cursor-not-allowed");
+          actionBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> DIAGNOSING PROTOCOLS...`;
+        }
+
+        if (scanRadarWave) {
+          scanRadarWave.classList.remove("hidden");
+        }
+
+        // Initialize logging
+        if (outputConsole) {
+          outputConsole.innerHTML = `<div class="text-cyan-400 font-mono text-[11px] font-bold">[SYS] CONNECTING RECEPTOR GRID ANALYZER...</div>`;
+        }
+
+        const scanSteps = [
+          { text: "[SYS] PARSING DAILY CYBER INTELLIGENCE...", delay: 800 },
+          { text: "[SYS] COMPILING USER STREAK & INTEGRITY...", delay: 1600 },
+          { text: "[SYS] SCANNING MEMORY BANKS FOR 'SCREEN DEMON' TOXINS...", delay: 2400 },
+          { text: "[SYS] EVALUATING TARGET PROTOCOL PERFORMANCE...", delay: 3200 },
+          { text: "[SYS] CALCULATING HABIT RECONSTRUCTION MATRIX...", delay: 4000 }
+        ];
+
+        scanSteps.forEach(step => {
+          setTimeout(() => {
+            if (outputConsole) {
+              outputConsole.innerHTML += `<div class="text-slate-300 font-mono text-[11px] mt-1">${step.text}</div>`;
+              outputConsole.scrollTop = outputConsole.scrollHeight;
+            }
+          }, step.delay);
+        });
+
+        setTimeout(() => {
+          isScanning = false;
+          if (scanRadarWave) {
+            scanRadarWave.classList.add("hidden");
+          }
+          if (actionBtn) {
+            actionBtn.disabled = false;
+            actionBtn.classList.remove("opacity-50", "cursor-not-allowed");
+            actionBtn.innerHTML = `<i class="fa-solid fa-radar mr-2"></i> INITIATE CYBER SCAN`;
+          }
+
+          // Compute a customized briefing report based on the user's logged metrics
+          const completedCount = storeState.habits.filter(h => h.completed).length;
+          const totalCount = storeState.habits.length;
+          const percentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+          
+          let scanBriefing = "";
+          let tips = "";
+
+          if (percentage >= 80) {
+            scanBriefing = `SYSTEM INTEGRITY STATUS: OPTIMAL (INTEGRITY AT ${percentage}%)`;
+            tips = `• No severe anomalies detected. Elite shield protocols operating smoothly.<br>• Screen Demon threat fully suppressed. Combat efficiency maximized!`;
+          } else if (percentage >= 50) {
+            scanBriefing = `SYSTEM INTEGRITY STATUS: STEADY (INTEGRITY AT ${percentage}%)`;
+            tips = `• Minor performance degradation flagged. Recommended to activate study logs.<br>• Screen Demon currently contained but monitoring user signals closely.`;
+          } else {
+            scanBriefing = `SYSTEM INTEGRITY STATUS: HAZARD ALERT (INTEGRITY AT ${percentage}%)`;
+            tips = `• CRITICAL STUDY DEFICIT! Brain wave alignment failing.<br>• Screen Demon has pierced local defenses! Tap "Study Review (70% Target)" to rebuild barriers.`;
+          }
+
+          if (outputConsole) {
+            outputConsole.innerHTML += `
+              <div class="border-t border-cyan-500/30 my-3 pt-3">
+                <div class="text-emerald-400 font-mono text-[11px] font-bold">[SYS] SCAN COMPLETE — REPORT GENERATED</div>
+                <div class="text-xs text-slate-100 font-sans font-semibold mt-1 bg-cyan-950/40 p-2 rounded border border-cyan-800/25">${scanBriefing}</div>
+                <div class="text-[11px] text-slate-300 mt-2 font-mono leading-relaxed">${tips}</div>
+              </div>
+            `;
+            outputConsole.scrollTop = outputConsole.scrollHeight;
+          }
+
+          window.triggerToast("⚡ Analytical Optimisation Profile complete!");
+        }, 5000);
+      };
+
+      // Theme Control (Light/Dark Toggle)
+      window.toggleAppTheme = function() {
+        const isLight = document.body.classList.toggle("light-theme");
+        storeState.theme = isLight ? "light" : "dark";
+        saveCurrentState();
+        loadCurrentView();
+      };
+
+      // Reset System Database Confirmation & Triggers
+      window.triggerFactoryResetConfirmation = function() {
+        const modal = document.getElementById("reset-confirmation-box");
+        if (modal) {
+          modal.classList.remove("hidden");
+        }
+      };
+
+      window.cancelFactoryReset = function() {
+        const modal = document.getElementById("reset-confirmation-box");
+        if (modal) {
+          modal.classList.add("hidden");
+        }
+      };
+
+      window.initiateFactoryReset = function() {
+        // Clear Local Sandbox Storage
+        localStorage.removeItem(DEFAULT_PERSISTENCE_KEY);
+        // Reset operational state fields
+        const themeToKeep = storeState.theme || "dark";
+        storeState = JSON.parse(JSON.stringify(defaultState));
+        storeState.theme = themeToKeep;
+        
+        // Save and trigger response
+        saveCurrentState();
+        window.triggerToast("SYSTEM PURGED: DATABASES RESET.", true);
+        window.switchTab("habits");
+      };
+
+      // Dynamic view controller
+      window.switchTab = function(tabName) {
+        // Automatically dismantle fencing intervals if shifting from timer
+        if (currentTab === "fencing_timer" && tabName !== "fencing_timer") {
+          if (typeof stopFencingTimer === "function") {
+            stopFencingTimer();
+          }
+        }
+
+        if (tabName === "fencing_timer") {
+          const limit = getFencingTotalSeconds();
+          if (fencingSecondsLeft > limit || fencingSecondsLeft === 40 * 60) {
+            fencingSecondsLeft = limit;
+          }
+        }
+
+        currentTab = tabName;
+        
+        // Update Bottom Menu visual selection
+        const btns = ["habits", "stats", "shop", "settings", "profile"];
+        btns.forEach(b => {
+          const btnEl = document.getElementById(`nav-btn-${b}`);
+          if (btnEl) {
+            const isSubTabHabit = (tabName === "fencing_timer" || tabName === "study_ocr" || tabName === "journal_ai") && b === "habits";
+            
+            if (b === tabName || isSubTabHabit) {
+              btnEl.classList.remove("text-slate-400");
+              // Custom active accent color colors depending on tab theme
+              if (b === "habits") {
+                btnEl.classList.add("text-cyan-400");
+                btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-cyan-400 rounded-full transition-all duration-300 opacity-100 glow-teal";
+              } else if (b === "stats") {
+                btnEl.classList.add("text-pink-400");
+                btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-pink-400 rounded-full transition-all duration-300 opacity-100 glow-pink";
+              } else if (b === "shop") {
+                btnEl.classList.add("text-amber-400");
+                btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-amber-400 rounded-full transition-all duration-300 opacity-100 glow-blue";
+              } else if (b === "settings") {
+                btnEl.classList.add("text-emerald-400");
+                btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-emerald-400 rounded-full transition-all duration-300 opacity-100 glow-teal";
+              } else if (b === "profile") {
+                btnEl.classList.add("text-purple-400");
+                btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-purple-400 rounded-full transition-all duration-300 opacity-100 glow-pink";
+              }
+            } else {
+              btnEl.className = "flex flex-col items-center justify-center flex-1 py-1.5 transition-all text-slate-400 group active:scale-95 duration-100 relative";
+              btnEl.querySelector("div").className = "absolute bottom-0 w-8 h-0.5 bg-transparent rounded-full transition-all duration-300 opacity-0";
+            }
+          }
+        });
+
+        loadCurrentView();
+      };
+
+      // Load specific tab HTML template
+      function loadCurrentView() {
+        const rootContainer = document.getElementById("content-pane");
+        if (!rootContainer) return;
+
+        if (currentTab === "habits") {
+          const totalHabits = storeState.habits.length;
+          const completedHabits = storeState.habits.filter(h => h.completed).length;
+          
+          const rankInfo = window.getRankInfo(storeState.user.xp);
+          
+          let progressPercent = 0;
+          if (storeState.user.xp <= 500) {
+            progressPercent = Math.min(100, Math.floor((storeState.user.xp / 500) * 100));
+          } else if (storeState.user.xp <= 1000) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 500) / 500) * 100));
+          } else if (storeState.user.xp <= 2000) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 1000) / 1000) * 100));
+          } else if (storeState.user.xp <= 3500) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 2000) / 1500) * 100));
+          } else {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 3500) / 1500) * 100));
+          }
+
+          // Active enemy lookup based on XP thresholds
+          const currentXpVal = storeState.user.xp;
+          let enemyName = "SCREEN DEMON";
+          let enemyPenalty = 50;
+          let enemyImage = "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935403/Screenshot_2026-05-28_at_09.29.04_s1sbfw.png";
+          let threatRating = "MODERATE COGNITIVE INTRUDER";
+          let pulseColor = "bg-pink-500 shadow-[0_0_8px_rgba(236,72,153,1)]";
+          
+          if (currentXpVal > 1500) {
+            enemyName = "SLOTH TITAN";
+            enemyPenalty = 400;
+            enemyImage = "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935642/Screenshot_2026-05-28_at_09.30.36_q5enxx.png";
+            threatRating = "CRITICAL HYPNOMEDIAL OVERLORD";
+            pulseColor = "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,1)]";
+          } else if (currentXpVal > 500) {
+            enemyName = "INTERCEPTOR UNIT";
+            enemyPenalty = 200;
+            enemyImage = "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935142/screen_zlf0fw.png";
+            threatRating = "HIGH INTELLIGENCE INTERCEPTOR";
+            pulseColor = "bg-cyan-400 shadow-[0_0_8px_rgba(6,182,212,1)]";
+          }
+
+          // Boss HP: depleted as habits are completed today
+          const bossHpPercent = totalHabits > 0 
+            ? Math.max(0, 100 - Math.round((completedHabits / totalHabits) * 100))
+            : 0;
+
+          // Global dismiss helper bound cleanly
+          window.dismissYesterdayMissedAlert = function() {
+            storeState.user.yesterdayMissed = false;
+            saveCurrentState();
+            loadCurrentView();
+          };
+
+          rootContainer.innerHTML = `
+            ${storeState.user.yesterdayMissed ? `
+              <!-- Red Attack Retaliation Alert Banner -->
+              <div class="mb-4 bg-red-950/45 border border-red-500/40 p-4 rounded-3xl relative overflow-hidden animate-shake">
+                <div class="absolute inset-0 bg-gradient-to-r from-red-500/5 to-transparent pointer-events-none"></div>
+                <div class="flex items-start gap-3 relative z-10">
+                  <div class="w-10 h-10 rounded-xl bg-red-900/40 border border-red-500/40 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-skull-crossbones text-red-500 animate-pulse text-lg animate-duration-1000"></i>
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-[10px] font-mono text-red-500 font-bold tracking-widest uppercase mb-0.5">VANGUARD SHIELD INTRUSION RETALIATION</div>
+                    <p class="text-[10.5px] font-mono text-red-200 mt-1 leading-normal">
+                      Yesterday, you failed to meet commitments: <span class="font-bold text-red-400">${(storeState.user.missedHabitsDetails || []).join(", ") || "various training tasks"}</span>. 
+                      Boss bypassed defenses to inflict direct shield integrity and status penalties.
+                    </p>
+                    <button onclick="window.dismissYesterdayMissedAlert()" class="mt-2.5 px-3 py-1 bg-red-905/70 hover:bg-red-800 border border-red-500/30 text-[9px] font-mono font-bold uppercase rounded text-red-100 transition duration-105 select-none cursor-pointer">
+                      Acknowledge & Calibrate
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ` : ""}
+
+            <!-- Immersive Vanguard Habits Header Block -->
+            <div class="mb-5 bg-gradient-to-b from-[#090d16] to-slate-950/40 border border-slate-900/80 p-4 rounded-3xl flex flex-col gap-3.5 shadow-md select-none">
+              <div class="flex items-center justify-between gap-2.5">
+                <div class="flex-1">
+                  <div class="text-[8px] font-mono tracking-widest text-[#06b6d4] uppercase font-bold leading-none">VANGUARD HABIT MATRIX</div>
+                  <h2 class="text-xs font-display font-black tracking-tight text-white mt-1 uppercase">THE ARENA CONTROLLERS</h2>
+                </div>
+
+                <!-- OVERRIDE: SKIP LEVEL -->
+                <button onclick="window.skipLevelProtocol()" class="text-[8.5px] font-mono font-black text-amber-400 bg-amber-950/45 border border-amber-500/35 hover:bg-amber-900/40 hover:text-amber-300 transition uppercase tracking-wider px-3 py-1.5 rounded-xl flex items-center gap-1.5 cursor-pointer active:scale-95 shadow shrink-0 select-none">
+                  <i class="fa-solid fa-angles-up animate-pulse text-xs text-amber-505"></i> SKIP LEVEL
+                </button>
+                
+                <!-- Small Avatar Portrait with Level Badge -->
+                <div class="relative cursor-pointer" onclick="window.switchTab('profile')">
+                  <div class="w-10 h-10 rounded-full border border-cyan-500 overflow-hidden bg-black flex items-center justify-center shadow-[0_0_12px_rgba(6,182,212,0.25)] relative">
+                    ${window.renderDynamicAvatarHTML(
+                      (!storeState.user.photoURL || storeState.user.photoURL.includes('unsplash.com') || storeState.user.photoURL.includes('photo-1535713875002-d1d0cf377fde')) ? rankInfo.img : storeState.user.photoURL,
+                      "",
+                      "home"
+                    )}
+                  </div>
+                  <div class="absolute -bottom-1 -right-1 bg-[#1e1b4b] border border-[#06b6d4] text-[6.5px] font-mono font-black text-[#06b6d4] px-1 py-0.5 rounded leading-none scale-90 z-20">
+                    LVL ${rankInfo.level}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Numerical Balance Stats Grid -->
+              <div class="bg-[#040811] border border-slate-900/80 p-2.5 rounded-2xl flex items-center gap-2.5 shadow-inner">
+                <div class="w-7.5 h-7.5 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-500 text-xs shrink-0"><i class="fa-solid fa-medal"></i></div>
+                <div>
+                  <span class="block text-[7px] font-mono text-slate-500 leading-none">TOTAL PROGRESS XP</span>
+                  <span class="block text-[11px] font-mono font-bold text-pink-400 mt-1 leading-none uppercase tracking-tight">${storeState.user.xp.toLocaleString()} XP</span>
+                </div>
+              </div>
+
+              <!-- XP Progress Bar with Animated Fill -->
+              <div class="space-y-1.5 pt-0.5">
+                <div class="flex items-center justify-between text-[8px] font-mono text-slate-400 uppercase tracking-widest font-bold">
+                  <span>RANK TIER: ${rankInfo.rank}</span>
+                  <span class="text-right text-[#06b6d4]">${storeState.user.xp} / ${rankInfo.maxXp} XP</span>
+                </div>
+                
+                <div class="w-full bg-[#040811] p-[1.5px] border border-slate-900 rounded-full h-3 overflow-hidden shadow-inner flex items-center">
+                  <div class="bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 h-full rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="flex items-center justify-between text-[7.5px] font-mono text-slate-500 uppercase tracking-wide">
+                  <span>${progressPercent}% THRESHOLD CLEARED</span>
+                  <span>${rankInfo.text}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Immersive Battle Arena Visual Block -->
+            <div class="mb-5 bg-slate-900/85 border border-slate-900 p-4 rounded-3xl relative overflow-hidden select-none flex flex-col gap-3 shadow-md">
+              <div class="absolute inset-0 bg-gradient-to-b from-slate-950/5 to-slate-950 pointer-events-none"></div>
+              
+              <div class="flex items-center justify-between relative z-10">
+                <div class="flex items-center gap-1.5">
+                  <span class="inline-block w-2.5 h-2.5 rounded-full ${pulseColor} animate-pulse shrink-0"></span>
+                  <span class="text-[10px] font-mono font-bold tracking-widest text-[#06b6d4] uppercase">ACTIVE FIELD ARENA</span>
+                </div>
+                
+                <div class="flex items-center gap-1.5 font-mono text-[9px] bg-slate-950 px-2 py-0.5 rounded border border-slate-900">
+                  <span class="text-slate-500">PENALTY:</span>
+                  <span class="font-extrabold text-red-400">-${enemyPenalty} XP</span>
+                </div>
+              </div>
+
+              <!-- Enemy Illustration -->
+              <div class="relative w-full h-[180px] rounded-2xl overflow-hidden border border-slate-850 p-0.5 bg-slate-950 flex shadow-inner group">
+                <div class="absolute inset-x-0 h-0.5 bg-cyan-400 opacity-25 scan-beam z-10 pointer-events-none font-sans flex items-center"></div>
+                <div class="w-full h-full rounded-[14px] overflow-hidden relative">
+                  <img src="${enemyImage}" alt="${enemyName}" class="w-full h-full object-cover group-hover:scale-102 duration-700 animate-fade-in transition-all">
+                  <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-75 pointer-events-none"></div>
+                </div>
+
+                <!-- Floating Threat Level Badge -->
+                <div class="absolute bottom-3 left-3 bg-slate-950/90 border border-slate-800 backdrop-blur px-2.5 py-1 rounded-xl pointer-events-none">
+                  <div class="text-[7.5px] font-mono tracking-widest text-slate-500 uppercase leading-none">THREAT LEVEL SPEC</div>
+                  <div class="text-[9.5px] font-mono font-black text-rose-450 uppercase tracking-tight mt-1 leading-none">${threatRating}</div>
+                </div>
+              </div>
+
+              <!-- Boss Health Bar -->
+              <div class="space-y-1.5 pt-0.5">
+                <div class="flex items-center justify-between font-mono text-[9.5px] leading-none">
+                  <span class="font-black tracking-widest text-slate-200 uppercase">${enemyName}</span>
+                  <span class="font-extrabold ${bossHpPercent > 0 ? "text-rose-500 animate-pulse" : "text-emerald-400"}">
+                    ${bossHpPercent > 0 ? `HP STATUS: ${bossHpPercent}%` : "DEFEATED [0% HP]"}
+                  </span>
+                </div>
+                
+                <div class="w-full bg-[#040811] p-[1.5px] border border-slate-900 rounded-lg h-3 overflow-hidden flex items-center shadow-inner">
+                  <div class="h-full rounded transition-all duration-550 ${
+                    bossHpPercent > 50 
+                      ? "bg-gradient-to-r from-red-700 to-rose-500 shadow-[0_0_8px_rgba(239,68,68,0.3)]" 
+                      : bossHpPercent > 0 
+                      ? "bg-gradient-to-r from-amber-600 to-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.3)]" 
+                      : "bg-gradient-to-r from-emerald-600 to-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.3)]"
+                  }" style="width: ${bossHpPercent}%"></div>
+                </div>
+                <div class="text-[7px] font-mono text-slate-500 tracking-wider text-right uppercase">
+                  ${
+                    bossHpPercent > 0 
+                      ? `SATISFY TARGET OBJECTIVES TODAY TO DAMAGE ENEMY CORE MATRIX!` 
+                      : `SYSTEM CLEAR! THE AREA HAS BEEN COMPREHENSIVELY SECURED FROM ATTACK!`
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- ALL ENEMIES SYSTEM BESTIARY -->
+            <div class="mb-5 bg-slate-900/60 border border-slate-900/80 p-4 rounded-3xl shadow-sm">
+              <div class="text-[10px] font-mono tracking-widest text-[#06b6d4] font-bold mb-1.5 uppercase flex items-center gap-1.5 select-none">
+                <i class="fa-solid fa-skull text-rose-500 animate-pulse"></i> THREAT ENCYCLOPEDIA (ALL CURRENT SECTORS)
+              </div>
+              <p class="text-[8.5px] font-mono text-slate-400 uppercase leading-snug mb-3 select-none">
+                Historical database of active cognitive intruders across all tiers, accessible even if locked.
+              </p>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                ${[
+                  {
+                    name: "SCREEN DEMON",
+                    lvl: "LVL 1 (0-500 XP)",
+                    rating: "MODERATE COGNITIVE INTRUDER",
+                    penalty: "-50 XP",
+                    img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935403/Screenshot_2026-05-28_at_09.29.04_s1sbfw.png",
+                    desc: "Injects minor attention lapses & notification baits. Suppressed upon basic onboarding."
+                  },
+                  {
+                    name: "INTERCEPTOR UNIT",
+                    lvl: "LVL 2 (501-1500 XP)",
+                    rating: "HIGH INTELLIGENCE INTERCEPTOR",
+                    penalty: "-200 XP",
+                    img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935142/screen_zlf0fw.png",
+                    desc: "Enforces continuous compliance loops and neural disruptions, making you hesitate more. High activity index."
+                  },
+                  {
+                    name: "SLOTH TITAN",
+                    lvl: "LVL 3+ (1501+ XP)",
+                    rating: "CRITICAL HYPNOMEDIAL OVERLORD",
+                    penalty: "-400 XP",
+                    img: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779935642/Screenshot_2026-05-28_at_09.30.36_q5enxx.png",
+                    desc: "Supreme bio-artificial giant spreading immense procrastination signals. Max severity."
+                  }
+                ].map(enemy => {
+                  let isEnemyActive = false;
+                  if (enemy.name === "SCREEN DEMON") {
+                    isEnemyActive = currentXpVal <= 500;
+                  } else if (enemy.name === "INTERCEPTOR UNIT") {
+                    isEnemyActive = currentXpVal > 500 && currentXpVal <= 1500;
+                  } else if (enemy.name === "SLOTH TITAN") {
+                    isEnemyActive = currentXpVal > 1500;
+                  }
+
+                  let statusBadgeText = "";
+                  let statusBgStyle = "";
+                  
+                  if (isEnemyActive) {
+                    statusBadgeText = "● ACTIVE TARGET";
+                    statusBgStyle = "bg-rose-500/10 border-rose-500/40 text-rose-400 shadow-[0_0_8px_rgba(239,68,68,0.2)] animate-pulse font-extrabold";
+                  } else {
+                    const isPassed = (enemy.name === "SCREEN DEMON" && currentXpVal > 500) || (enemy.name === "INTERCEPTOR UNIT" && currentXpVal > 1500);
+                    if (isPassed) {
+                      statusBadgeText = "✓ BYPASSED / SUPPRESSED";
+                      statusBgStyle = "bg-emerald-950/25 border-emerald-950/35 text-emerald-400 font-bold";
+                    } else {
+                      statusBadgeText = "🔒 RESTRICTED (LOCKED)";
+                      statusBgStyle = "bg-slate-950 border-slate-900 text-slate-500 font-medium";
+                    }
+                  }
+                  
+                  return `
+                    <div class="bg-slate-950/75 rounded-2xl border ${isEnemyActive ? 'border-cyan-500/50' : 'border-slate-850/50'} p-3 flex flex-col gap-2.5 justify-between">
+                      <div class="space-y-2">
+                        <!-- Image Container -->
+                        <div class="relative h-24 rounded-xl overflow-hidden border border-slate-905 bg-slate-900">
+                          <img src="${enemy.img}" class="w-full h-full object-cover filter ${isEnemyActive ? '' : 'brightness-[0.35] grayscale'}" alt="${enemy.name}" />
+                          <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent"></div>
+                          
+                          <!-- Float tier indicator -->
+                          <div class="absolute top-1.5 right-1.5 bg-black/90 border border-slate-800 text-[6.5px] font-mono text-cyan-400 px-1.5 py-0.5 rounded leading-none uppercase">
+                            ${enemy.lvl}
+                          </div>
+                        </div>
+                        
+                        <!-- Info text specs -->
+                        <div>
+                          <h4 class="text-[10px] font-mono font-black text-slate-200 uppercase tracking-tight">${enemy.name}</h4>
+                          <span class="block text-[6.5px] font-mono text-slate-400 uppercase tracking-wider mt-0.5">${enemy.rating}</span>
+                          <p class="text-[7.5px] font-mono text-slate-500 mt-1 leading-normal uppercase select-text">${enemy.desc}</p>
+                        </div>
+                      </div>
+                      
+                      <!-- Bottom badge status -->
+                      <div class="pt-2 border-t border-slate-900/60 flex flex-col gap-1">
+                        <div class="flex items-center justify-between text-[7px] font-mono">
+                          <span class="text-slate-500">DEFICIT PENALTY:</span>
+                          <span class="text-rose-450 font-extrabold">${enemy.penalty}</span>
+                        </div>
+                        <div class="text-[7px] font-mono py-1 rounded-lg text-center border uppercase mt-1 ${statusBgStyle}">
+                          ${statusBadgeText}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+
+            <!-- Daily Countdown & Title Header -->
+            <div class="flex items-center justify-between mb-4 px-1 select-none">
+              <span class="text-xs font-mono text-slate-400 font-semibold tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-crosshair text-cyan-400"></i> MISSION LOG DIRECTIVES
+              </span>
+              
+              <div class="flex items-center gap-1.5 font-mono text-[9px] bg-[#040811] border border-slate-900 px-2.5 py-1 rounded-xl text-[#06b6d4] shadow-inner">
+                <i class="fa-solid fa-hourglass-half text-cyan-400 animate-spin animate-duration-3000 text-[8px]"></i>
+                <span id="daily-reset-countdown" class="font-bold tracking-tight">23h 59m 59s</span>
+              </div>
+            </div>
+
+            <!-- Objectives List container -->
+            <div class="space-y-3 mb-5" id="objectives-list">
+              ${
+                storeState.habits.map(habit => {
+                  const s = habit.streak || 0;
+                  return `
+                    <div class="rounded-3xl border transition-all duration-200 cursor-pointer ${
+                      habit.completed 
+                        ? "bg-emerald-950/20 border-emerald-500/35 shadow-[0_0_12px_rgba(16,185,129,0.1)] text-emerald-100" 
+                        : "bg-[#090d16] border-slate-900 text-slate-200 hover:border-slate-805"
+                    } p-3.5 flex items-center justify-between group active:scale-[0.99] duration-100">
+                      
+                      <div class="flex items-center space-x-3.5 flex-1">
+                        <!-- Cyber toggle checkmark button -->
+                        <button onclick="event.stopPropagation(); toggleObjectiveCompletion('${habit.id}')" class="relative w-7 h-7 rounded-lg flex items-center justify-center border-2 transition-all cursor-pointer select-none shrink-0 ${
+                          habit.completed 
+                            ? "border-emerald-500 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]" 
+                            : "border-slate-800 bg-slate-950 hover:border-cyan-500/50"
+                        }">
+                          ${habit.completed ? `<i data-lucide="check" class="w-4 h-4 text-slate-950 stroke-[3.5] animate-bounce"></i>` : ""}
+                        </button>
+                        
+                        <!-- Details clickable -->
+                        <div class="flex-1" onclick="handleObjectiveSelect('${habit.id}')">
+                          <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="text-xs font-semibold font-display tracking-tight text-slate-100">
+                              ${
+                                habit.id === 'train_fencing'
+                                  ? `Train Fencing (${getFencingTotalSeconds() / 60}m)`
+                                  : habit.title
+                              }
+                            </span>
+                            <span class="text-[8px] font-mono font-bold px-1.5 py-0.5 rounded bg-slate-950 border border-slate-850 ${
+                              habit.category === "INTEGRITY" 
+                                ? "text-pink-400" 
+                                : habit.category === "TRAINING" 
+                                ? "text-cyan-400" 
+                                : "text-emerald-400"
+                            }">${habit.badge}</span>
+                          </div>
+                          <p class="text-[9.5px] text-slate-400 font-mono mt-1 leading-tight">${habit.desc}</p>
+                        </div>
+                      </div>
+
+                      <div class="flex items-center space-x-2.5 ml-1.5">
+                        <!-- Streak Flame badge -->
+                        <div class="flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 text-amber-500 font-mono text-[9px] px-2 py-0.5 rounded-lg shrink-0 leading-none select-none">
+                          <i class="fa-solid fa-fire text-amber-500 text-[8px] animate-pulse"></i>
+                          <span class="font-extrabold">${s}</span>
+                        </div>
+
+                        <div class="text-right select-none shrink-0" onclick="handleObjectiveSelect('${habit.id}')">
+                          <span class="text-[10px] font-mono font-bold tracking-tight text-emerald-400 leading-none block">+${habit.xpReward} XP</span>
+                          <span class="text-[9px] font-mono text-amber-400 leading-none block mt-1">+${habit.crystalsReward} 🔮</span>
+                        </div>
+
+                        <!-- Remove option for custom items -->
+                        ${habit.id.startsWith("custom_") ? `
+                          <button onclick="deleteObjective('${habit.id}')" class="w-7 h-7 bg-slate-950/60 border border-pink-500/10 hover:border-pink-500/30 text-pink-500 transition-all active:scale-90 rounded-lg flex items-center justify-center shrink-0">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                          </button>
+                        ` : `
+                          <div class="w-7"></div>
+                        `}
+                      </div>
+                    </div>
+                  `;
+                }).join("")
+              }
+            </div>
+
+            <!-- Fast Add Manual Objective Panel -->
+            <form id="fast-add-panel" onsubmit="submitCustomObjective(event)" class="mt-4 p-4 rounded-3xl bg-slate-900/50 border border-slate-900/85 flex flex-col space-y-3 shadow-inner">
+              <div class="text-[9.5px] font-mono text-slate-400 font-bold uppercase tracking-widest"><i class="fa-solid fa-plus-circle mr-1"></i> LOG NEW TACTICAL OBJECTIVE</div>
+              
+              <div class="flex gap-2.5">
+                <input id="new-obj-title" type="text" placeholder="Objective name (e.g., Practise AI models)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-sans text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-cyan-500/60 text-ellipsis">
+                <select id="new-obj-category" class="bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs font-mono text-cyan-400 focus:outline-none">
+                  <option value="REFLEX">REFLEX</option>
+                  <option value="TRAINING">TRAINING</option>
+                  <option value="INTEGRITY">INTEGRITY</option>
+                </select>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="text-[10px] font-mono text-slate-400">XP REWARD:</span>
+                  <input id="new-obj-xp" type="number" value="15" min="5" max="100" class="w-14 text-center bg-slate-950 border border-slate-800 rounded-lg py-1 text-xs font-mono text-emerald-400">
+                </div>
+                
+                <button type="submit" class="bg-cyan-650 hover:bg-cyan-600 text-slate-950 font-display font-black text-[10px] tracking-widest px-4 py-2.5 rounded-xl border border-cyan-400/30 transition-all active:scale-95 duration-100 flex items-center gap-1.5 shadow-lg shadow-cyan-900/20">
+                  <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i> UPLOAD DUTY
+                </button>
+              </div>
+            </form>
+          `;
+        } else if (currentTab === "fencing_timer") {
+          const isFencingCompleted = storeState.habits.find(h => h.id === "train_fencing")?.completed;
+
+          if (isFencingCompleted) {
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits')" class="text-[10px] font-mono font-bold text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow-sm cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Base Matrix
+                </button>
+                <div class="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-900/30 px-2.5 py-1 rounded-lg uppercase tracking-wider select-none">
+                  Verified Complete
+                </div>
+              </div>
+
+              <!-- Complete card block -->
+              <div class="p-6 bg-slate-900/40 border border-emerald-500/30 rounded-3xl relative overflow-hidden flex flex-col items-center">
+                <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-500/30 to-transparent pointer-events-none"></div>
+                <div class="w-16 h-16 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-center mb-4 text-glow-teal animate-pulse">
+                  <i class="fa-solid fa-check text-emerald-400 text-3xl"></i>
+                </div>
+                
+                <h3 class="text-sm font-display font-black text-slate-100 uppercase tracking-tight">KINETIC REFLEX MATRIX ACTIVE</h3>
+                <p class="text-[10px] text-slate-400 font-mono mt-2 max-w-xs text-center leading-relaxed">
+                  The ${getFencingTotalSeconds() / 60}-minute training session has been validated and committed. All reflex telemetry cues successfully logged.
+                </p>
+
+                <div class="mt-6 flex gap-2">
+                  <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/30 px-3 py-1.5 rounded-xl">
+                    +30 XP RECEIVED
+                  </span>
+                  <span class="text-[10px] font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800/30 px-3 py-1.5 rounded-xl">
+                    +20 🔮 CREDITED
+                  </span>
+                </div>
+
+                <button onclick="toggleObjectiveCompletion('train_fencing'); loadCurrentView();" class="mt-8 text-[9px] font-mono text-pink-400 hover:text-pink-300 transition uppercase tracking-widest bg-pink-950/20 px-4 py-2 rounded-xl border border-pink-900/40 select-none cursor-pointer">
+                  Reset Objective (Force rerun test)
+                </button>
+              </div>
+            `;
+          } else {
+            const mins = Math.floor(fencingSecondsLeft / 60);
+            const secs = fencingSecondsLeft % 60;
+            const timeStr = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const totalSeconds = getFencingTotalSeconds();
+            const progressRatio = Math.min(100, ((totalSeconds - fencingSecondsLeft) / totalSeconds) * 100);
+
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits')" class="text-[10px] font-mono font-bold text-slate-400 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Base Matrix
+                </button>
+                <div class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest select-none">
+                  REFLEX TIMER: ${getFencingTotalSeconds() / 60} MINS
+                </div>
+              </div>
+
+              <!-- Immersive Timer Console -->
+              <div class="bg-slate-900/60 border border-slate-800/80 p-5 rounded-3xl flex flex-col items-center relative overflow-hidden">
+                <!-- Glitched Scanline Decoration -->
+                <div id="fencing-scanline" class="absolute inset-x-0 h-0.5 bg-cyan-400/30 opacity-70 scan-beam hidden"></div>
+
+                <span class="text-[9px] font-mono text-slate-500 tracking-widest uppercase mb-1">CHRONOS COGNITIVE TIMER</span>
+                
+                <!-- Main big timer characters -->
+                <div id="fencing-countdown-display" class="text-4xl font-mono font-bold text-cyan-400 tracking-tight text-glow-teal my-2 select-none">${timeStr}</div>
+                
+                <!-- Progress Line -->
+                <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden p-0.5 border border-slate-850 mt-1 mb-3">
+                  <div id="fencing-timer-progress" class="bg-gradient-to-r from-cyan-500 to-blue-500 h-full rounded-full transition-all duration-300 glow-teal" style="width: ${progressRatio}%"></div>
+                </div>
+
+                <!-- Timer Controls & Fast Forward Hack Options -->
+                <div class="flex items-center justify-between w-full mt-2.5">
+                  <button id="fencing-toggle-btn" onclick="toggleFencingTimer()" class="px-4 py-2 rounded-xl bg-cyan-950/85 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-bold active:scale-95 duration-100 flex items-center gap-1.5 cursor-pointer select-none">
+                    <i class="fa-solid fa-${fencingTimerActive ? 'pause' : 'play'}"></i> ${fencingTimerActive ? 'PAUSE' : 'START'}
+                  </button>
+
+                  <div class="flex gap-1">
+                    <button id="ff-btn" onclick="setFencingTimeSpeed(100)" class="px-2.5 py-1.5 rounded-lg bg-slate-950 border border-slate-850 text-[8px] font-mono text-cyan-450 active:scale-95 cursor-pointer">
+                      ⏩ FF (100x)
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Interactive Kinetic Motion Cue Detector with Camera Feed -->
+              <div class="mt-4 rounded-3xl bg-slate-950 border border-slate-850 flex flex-col items-center min-h-[220px] justify-center text-center relative overflow-hidden shadow-inner">
+                <!-- Camera Feed Container -->
+                <div class="absolute inset-0 bg-black flex items-center justify-center">
+                  <video id="fencing-video" autoplay playsinline muted class="w-full h-full object-cover hidden" style="transform: scaleX(-1); opacity: 0.5;"></video>
+                  <canvas id="fencing-motion-canvas" class="absolute inset-0 w-full h-full pointer-events-none hidden" style="transform: scaleX(-1);"></canvas>
+                  
+                  <!-- Calibration Overlay Grid -->
+                  <div id="fencing-camera-placeholder" class="text-slate-600 font-mono text-[10px] uppercase flex flex-col items-center gap-2 p-4 select-none">
+                    <i class="fa-solid fa-camera-slash text-2xl text-slate-700 animate-pulse"></i>
+                    <span>SENSOR ARRAY OFFLINE</span>
+                    <span class="text-[8px] text-slate-500 lowercase leading-relaxed">press start to bind kinetic camera feedback</span>
+                  </div>
+                </div>
+
+                <!-- HUD Telemetry Panel (Overlay top-left) -->
+                <div id="fencing-hud-telemetry" class="absolute top-2.5 left-2.5 bg-black/75 border border-[#06b6d4]/30 px-2 py-1.5 rounded-xl text-left font-mono text-[7.5px] text-[#06b6d4] uppercase leading-relaxed hidden pointer-events-none select-none z-10">
+                  <div class="font-extrabold pb-0.5 border-b border-cyan-500/20 text-[#06b6d4] flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span> KINETIC INTEGRATION
+                  </div>
+                  <div>ENERGY: <span id="telemetry-energy">0%</span></div>
+                  <div>FLOW-X: <span id="telemetry-flow-x">0.0px</span></div>
+                  <div>VELOCITY: <span id="telemetry-velocity">STABLE</span></div>
+                </div>
+
+                <!-- Dynamic Prompt Overlay Area (Centered) -->
+                <div class="absolute inset-x-0 bottom-3 top-3 flex flex-col items-center justify-center bg-black/30 backdrop-blur-[1px] select-none pointer-events-none p-3 z-10">
+                  <div id="fencing-cue-prompt" class="flex flex-col items-center w-full">
+                    <div class="text-slate-500 text-xs font-mono">STANDBY. PRESS "START" TO INITIALIZE MONITOR RADAR.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Sweep action triggers for simulator -->
+              <div class="mt-4 grid grid-cols-3 gap-2">
+                <button onclick="handleFencingAction('ATTACK')" class="bg-rose-950/30 hover:bg-rose-900/30 text-rose-450 border border-rose-900/40 p-3 rounded-2xl flex flex-col items-center gap-1 active:scale-95 duration-100 cursor-pointer">
+                  <span class="text-xs">⚔️</span>
+                  <span class="text-[9px] font-mono font-bold tracking-wider">ATTACK</span>
+                </button>
+                <button onclick="handleFencingAction('PARRY')" class="bg-cyan-950/30 hover:bg-cyan-900/30 text-cyan-500 border border-cyan-900/40 p-3 rounded-2xl flex flex-col items-center gap-1 active:scale-95 duration-100 cursor-pointer">
+                  <span class="text-xs">🛡️</span>
+                  <span class="text-[9px] font-mono font-bold tracking-wider">PARRY</span>
+                </button>
+                <button onclick="handleFencingAction('RETREAT')" class="bg-amber-950/30 hover:bg-amber-900/30 text-amber-500 border border-amber-900/40 p-3 rounded-2xl flex flex-col items-center gap-1 active:scale-95 duration-100 cursor-pointer">
+                  <span class="text-xs">🏃</span>
+                  <span class="text-[9px] font-mono font-bold tracking-wider">RETREAT</span>
+                </button>
+              </div>
+
+              <!-- Match rounds feedback bar -->
+              <div id="fencing-feedback-bar" class="mt-3 text-center text-[10px] font-mono text-slate-500 uppercase select-none">
+                Standby. Start fencing simulation to sync reflex sensors.
+              </div>
+
+              <!-- Debug debug skip buttons -->
+              <button onclick="fencingInstantComplete()" class="w-full mt-4 bg-slate-900/60 hover:bg-slate-850 p-2 text-center text-[9px] font-mono text-pink-500 border border-pink-900/10 rounded-xl transition duration-100 uppercase select-none cursor-pointer">
+                ⏩ Force Complete Habit (Skip Sandbox)
+              </button>
+            `;
+            setTimeout(updateFencingCueDisplay, 50);
+          }
+        } else if (currentTab === "study_ocr") {
+          const isStudyCompleted = storeState.habits.find(h => h.id === "study_review")?.completed;
+
+          if (isStudyCompleted) {
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits')" class="text-[10px] font-mono font-bold text-slate-450 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow-sm cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Base Matrix
+                </button>
+                <div class="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-900/30 px-2.5 py-1 rounded-lg uppercase tracking-wider select-none">
+                  Verified Complete
+                </div>
+              </div>
+
+              <!-- Complete card block -->
+              <div class="p-6 bg-slate-900/40 border border-emerald-500/30 rounded-3xl relative overflow-hidden flex flex-col items-center">
+                <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-500/30 to-transparent pointer-events-none"></div>
+                <div class="w-16 h-16 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-center mb-4 text-glow-teal animate-pulse">
+                  <i class="fa-solid fa-award text-emerald-400 text-3xl"></i>
+                </div>
+                
+                <h3 class="text-sm font-display font-black text-slate-100 uppercase tracking-tight">INTEL VERIFICATION SIGNED</h3>
+                <p class="text-[10px] text-slate-400 font-mono mt-2 max-w-xs text-center leading-relaxed">
+                  Your academic study records have been recognized. The homework verification was certified and completed via optical photo analysis.
+                </p>
+
+                <div class="mt-6 flex gap-2">
+                  <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/30 px-3 py-1.5 rounded-xl">
+                    +15 XP MARKED
+                  </span>
+                  <span class="text-[10px] font-mono font-bold text-amber-450 bg-amber-950/60 border border-amber-800/30 px-3 py-1.5 rounded-xl">
+                    +15 🔮 CREDITED
+                  </span>
+                </div>
+
+                <button onclick="toggleObjectiveCompletion('study_review'); loadCurrentView();" class="mt-8 text-[9px] font-mono text-pink-400 hover:text-pink-300 transition uppercase tracking-widest bg-pink-950/20 px-4 py-2 rounded-xl border border-pink-900/40 select-none cursor-pointer">
+                  Reset Objective (Force rerun test)
+                </button>
+              </div>
+            `;
+          } else {
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits'); stopOcrCamera();" class="text-[10px] font-mono font-bold text-slate-450 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Base Matrix
+                </button>
+                <div class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest select-none">
+                  DOCUMENT STUDY SCANNER
+                </div>
+              </div>
+
+              <!-- Verification Guidelines Banner -->
+              <div class="mb-4 bg-slate-900/60 border border-slate-800/75 p-3 rounded-2xl flex flex-col space-y-1">
+                <div class="text-[9px] font-mono text-pink-500 font-bold tracking-wider uppercase select-none">AI VERIFICATION METRICS</div>
+                <div class="text-slate-300 font-sans text-xs leading-relaxed select-none">
+                  Activate your camera or upload a photo of your completed worksheets, printed textbooks, homework pages, or study notes. The server-side Gemini system will analyze the image structure to approve completion.
+                </div>
+              </div>
+
+              <!-- Camera Feed View Container -->
+              <div class="relative w-full h-48 bg-slate-950 rounded-2xl border border-slate-900 flex flex-col items-center justify-center overflow-hidden mb-3">
+                <video id="ocr-video" autoplay playsinline muted class="w-full h-full object-cover hidden" style="transform: scaleX(-1);"></video>
+                <img id="ocr-uploaded-preview" class="w-full h-full object-contain hidden" />
+                
+                <div id="ocr-camera-placeholder" class="text-center p-4 select-none">
+                  <div class="text-[28px] animate-pulse">📄</div>
+                  <div class="text-[10px] font-mono font-bold text-slate-400 mt-2 uppercase">Optical Scanner Idle</div>
+                  <div class="text-[8px] font-mono text-slate-600 lowercase mt-0.5">Capture Snapshot or Upload File below</div>
+                </div>
+
+                <!-- Scanning HUD sweeps line animation -->
+                <div id="ocr-laser-banner" class="absolute inset-x-0 h-0.5 bg-cyan-400/50 glow-teal hidden ocr-scanner-line pointer-events-none"></div>
+              </div>
+
+              <!-- Integrated Trigger Controllers -->
+              <div class="grid grid-cols-2 gap-2 mb-4">
+                <button onclick="startOcrCamera()" class="p-2.5 bg-slate-900 hover:bg-slate-850 rounded-2xl border border-slate-800 text-center transition flex flex-col items-center justify-center gap-1.5 active:scale-95 cursor-pointer text-cyan-400 font-mono text-[9px] uppercase">
+                  <i class="fa-solid fa-camera text-base"></i>
+                  <span>Bind Live Camera</span>
+                </button>
+                <button onclick="document.getElementById('ocr-file-input').click()" class="p-2.5 bg-slate-900 hover:bg-slate-850 rounded-2xl border border-slate-800 text-center transition flex flex-col items-center justify-center gap-1.5 active:scale-95 cursor-pointer text-pink-400 font-mono text-[9px] uppercase font-bold">
+                  <i class="fa-solid fa-file-arrow-up text-base"></i>
+                  <span>Upload Document</span>
+                </button>
+                <input type="file" id="ocr-file-input" accept="image/*" class="hidden" onchange="handleOcrFileSelect(event)">
+              </div>
+
+              <!-- Capture Snapshots / Analyze Trigger button -->
+              <button id="ocr-scan-btn" onclick="executeRealOcrScanner()" class="w-full text-cyan-400 bg-cyan-950/40 hover:bg-cyan-900/40 py-3 rounded-2xl font-display font-medium text-xs border border-cyan-800/40 tracking-wider shadow duration-100 flex items-center justify-center gap-1.5 cursor-pointer uppercase">
+                <i class="fa-solid fa-expand"></i> ANALYZE DOCUMENT INTEL
+              </button>
+
+              <!-- Real-time Status Terminal -->
+              <div class="mt-4 p-3 bg-slate-950 border border-slate-900 rounded-2xl flex flex-col">
+                <div class="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1 select-none">AI DOCUMENT RECOGNITION CORES:</div>
+                <div id="ocr-status-logs" class="text-[9px] font-mono text-slate-400 leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap h-14">
+                  [SYS] Standby. Activate live stream camera sensor or upload study records to initiate orbital alignment...
+                </div>
+              </div>
+            `;
+          }
+        } else if (currentTab === "journal_ai") {
+          const isJournalCompleted = storeState.habits.find(h => h.id === "journal_rest")?.completed;
+
+          if (isJournalCompleted) {
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits')" class="text-[10px] font-mono font-bold text-slate-450 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow-sm cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Base Matrix
+                </button>
+                <div class="text-[10px] font-mono text-emerald-400 font-bold bg-emerald-950/40 border border-emerald-900/30 px-2.5 py-1 rounded-lg uppercase tracking-wider select-none">
+                  Verified Complete
+                </div>
+              </div>
+
+              <!-- Complete card block -->
+              <div class="p-6 bg-slate-900/40 border border-emerald-500/30 rounded-3xl relative overflow-hidden flex flex-col items-center">
+                <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-emerald-500/30 to-transparent pointer-events-none"></div>
+                <div class="w-16 h-16 rounded-2xl bg-emerald-950/60 border border-emerald-500/40 flex items-center justify-center mb-4 text-glow-teal animate-pulse">
+                  <i class="fa-solid fa-moon text-emerald-400 text-3xl"></i>
+                </div>
+                
+                <h3 class="text-sm font-display font-black text-slate-100 uppercase tracking-tight">MIND LOG SYNC COMPLETED</h3>
+                <p class="text-[10px] text-slate-400 font-mono mt-2 max-w-xs text-center leading-relaxed">
+                  Your evening cognitive reflections have been analyzed and locked. Rest protocol currently authorized.
+                </p>
+
+                <div class="mt-6 flex gap-2">
+                  <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/30 px-3 py-1.5 rounded-xl">
+                    +15 XP RECEIVED
+                  </span>
+                  <span class="text-[10px] font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800/30 px-3 py-1.5 rounded-xl">
+                    +10 🔮 CREDITED
+                  </span>
+                </div>
+
+                <button onclick="toggleObjectiveCompletion('journal_rest'); loadCurrentView();" class="mt-8 text-[9px] font-mono text-pink-400 hover:text-pink-300 transition uppercase tracking-widest bg-pink-950/20 px-4 py-2 rounded-xl border border-pink-900/40 select-none cursor-pointer">
+                  Reset Objective (Force rerun test)
+                </button>
+              </div>
+            `;
+          } else {
+            rootContainer.innerHTML = `
+              <!-- Back Navigator and Title -->
+              <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <button onclick="window.switchTab('habits')" class="text-[10px] font-mono font-bold text-slate-450 hover:text-cyan-400 transition flex items-center gap-1.5 uppercase bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-900 shadow cursor-pointer select-none">
+                  <i class="fa-solid fa-arrow-left text-xs"></i> Back to Base
+                </button>
+                <div class="text-[10px] font-mono text-cyan-400 font-bold uppercase tracking-widest select-none">
+                  MIND JOURNAL SENSOR
+                </div>
+              </div>
+
+              <!-- Guidance Message -->
+              <div class="mb-4 bg-slate-900/60 border border-slate-800/75 p-3 rounded-2xl flex flex-col space-y-1">
+                <div class="text-[9px] font-mono text-purple-400 font-bold tracking-wider uppercase select-none">TEXT-AI SCANNER PROTOCOL</div>
+                <div class="text-slate-300 font-sans text-xs leading-relaxed select-none">
+                  Reflect on your daily tactical gains below. Typing ANY text unlocks the Text-AI analyzer to evaluate and log this objective.
+                </div>
+              </div>
+
+              <!-- Core text editing area -->
+              <div class="relative">
+                <div id="journal-scanline" class="absolute inset-x-0 h-0.5 bg-purple-400 opacity-75 scan-beam hidden rounded"></div>
+                <textarea id="journal-text-entry" onkeyup="checkJournalTextDetected()" placeholder="Initiate neurological logs here... (e.g., Today we practiced reflex parrying angles, countered the Screen Demon study review deficit block, and consolidated combat guidelines.)" class="w-full h-36 bg-slate-950 border border-slate-900/80 rounded-3xl p-4 text-xs font-sans text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-purple-500/50 resize-none leading-relaxed"></textarea>
+              </div>
+
+              <!-- Character validator status -->
+              <div class="mt-2.5 flex items-center justify-between px-1">
+                <span class="text-[8px] font-mono text-slate-500 uppercase select-none">Input Sensor Status:</span>
+                <span id="journal-status-indicator" class="text-pink-400 font-bold text-[8px] font-mono uppercase select-none">[ NO CHARACTERS DETECTED ]</span>
+              </div>
+
+              <!-- Analyze button trigger -->
+              <button id="journal-ai-btn" onclick="executeSimulatedJournalParser()" disabled class="w-full mt-4 bg-slate-850 text-slate-600 py-3 rounded-2xl font-display font-medium text-xs border border-slate-800 cursor-not-allowed uppercase tracking-wider flex items-center justify-center gap-1">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Run Neural Sync
+              </button>
+
+              <!-- Real-time Status Terminal -->
+              <div class="mt-4 p-3 bg-slate-950 border border-slate-900 rounded-2xl flex flex-col">
+                <div class="text-[9px] font-mono text-slate-500 uppercase tracking-widest mb-1 select-none">MIND INTERPRETER TERMINAL:</div>
+                <div id="journal-ai-status-logs" class="text-[9px] font-mono text-slate-400 leading-relaxed max-h-24 overflow-y-auto whitespace-pre-wrap h-14">
+                  [SYS] Standby. Waiting for character input detection...
+                </div>
+              </div>
+            `;
+          }
+        } else if (currentTab === "stats") {
+          const stats = storeState.user.stats || {};
+          const totalXpEarned = stats.totalXp || 9450;
+          const coinsSpent = stats.coinsSpent || 450;
+          const perfectDays = stats.perfectDays || 12;
+          const bestStreak = stats.bestStreak || 16;
+          
+          const rankInfo = window.getRankInfo(storeState.user.xp);
+
+          rootContainer.innerHTML = `
+            <!-- Avatar Portrait with Level Badge -->
+            <div class="flex flex-col items-center justify-center mb-6 pt-2 select-none">
+              <div class="relative w-28 h-28 rounded-full border-2 border-pink-500/50 p-1 flex items-center justify-center bg-slate-950/85 shadow-[0_0_20px_rgba(236,72,153,0.3)] overflow-visible">
+                <!-- Glowing matrix outline inside -->
+                <div class="absolute inset-0 rounded-full border border-pink-500/20 animate-pulse pointer-events-none"></div>
+                <!-- Main Illustration container -->
+                <div class="w-full h-full rounded-full overflow-hidden bg-black relative">
+                  ${window.renderDynamicAvatarHTML(
+                    rankInfo.img || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400',
+                    "",
+                    "profile"
+                  )}
+                </div>
+                <!-- Scanning line effect -->
+                <div class="absolute inset-x-0 h-0.5 bg-pink-400 opacity-40 scan-beam pointer-events-none"></div>
+              </div>
+              <div class="mt-2.5">
+                <span class="inline-flex items-center px-4 py-1.5 bg-pink-500 text-slate-950 font-display font-black text-[10px] tracking-widest rounded-full shadow-[0_0_12px_rgba(236,72,153,0.4)] uppercase">
+                  LVL 0${rankInfo.level}
+                </span>
+              </div>
+            </div>
+
+            <!-- Numeric telemetry cards block -->
+            <div class="grid grid-cols-2 gap-3 mb-5">
+              <div class="bg-slate-900/80 border border-slate-800/80 p-3.5 rounded-2xl flex flex-col items-start relative overflow-hidden group hover:border-pink-500/20 transition-colors">
+                <div class="absolute top-2 right-2 text-pink-500/25 text-sm"><i class="fa-solid fa-star"></i></div>
+                <span class="text-[9px] font-mono text-slate-400 tracking-wider uppercase">TOTAL XP EARNED</span>
+                <span class="text-lg font-display font-bold text-pink-400 tracking-tight mt-1 text-glow-pink">${totalXpEarned.toLocaleString()} XP</span>
+              </div>
+              
+              <div class="bg-slate-900/80 border border-slate-800/80 p-3.5 rounded-2xl flex flex-col items-start relative overflow-hidden group hover:border-amber-500/20 transition-colors">
+                <div class="absolute top-2 right-2 text-amber-500/25 text-sm"><i class="fa-solid fa-gem"></i></div>
+                <span class="text-[9px] font-mono text-slate-400 tracking-wider uppercase">CRYSTALS SPENT</span>
+                <span class="text-lg font-display font-bold text-amber-450 tracking-tight mt-1">${coinsSpent} 🔮</span>
+              </div>
+
+              <div class="bg-slate-900/80 border border-slate-800/80 p-3.5 rounded-2xl flex flex-col items-start relative overflow-hidden group hover:border-cyan-500/20 transition-colors">
+                <div class="absolute top-2 right-2 text-cyan-500/25 text-sm"><i class="fa-solid fa-circle-check"></i></div>
+                <span class="text-[9px] font-mono text-slate-400 tracking-wider uppercase">PERFECT DAYS</span>
+                <span class="text-lg font-display font-bold text-cyan-400 tracking-tight mt-1 text-glow-teal">${perfectDays} DAYS</span>
+              </div>
+
+              <div class="bg-slate-900/80 border border-slate-800/80 p-3.5 rounded-2xl flex flex-col items-start relative overflow-hidden group hover:border-purple-500/20 transition-colors">
+                <div class="absolute top-2 right-2 text-purple-500/25 text-sm"><i class="fa-solid fa-fire"></i></div>
+                <span class="text-[9px] font-mono text-slate-400 tracking-wider uppercase">BEST STREAK</span>
+                <span class="text-lg font-display font-bold text-purple-400 tracking-tight mt-1">${bestStreak} DAYS</span>
+              </div>
+            </div>
+
+            <!-- 7-Day XP Bar Chart -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-5">
+              <div class="text-[11px] font-mono tracking-widest text-[#3b82f6] font-bold mb-4 uppercase flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i data-lucide="trending-up" class="w-4.5 h-4.5"></i> 7-DAY XP CHRONICLE</span>
+                <span class="text-[9px] font-mono text-slate-400 uppercase">UNIT: XP</span>
+              </div>
+              
+              <!-- Columns -->
+              <div class="flex items-end justify-between h-36 px-2 pt-2 border-b border-slate-800/80">
+                ${(storeState.user.stats.weeklyXp || [180, 240, 150, 320, 180, 410, 290]).map((xp, index) => {
+                  const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+                  const maxVal = Math.max(...(storeState.user.stats.weeklyXp || [180, 240, 150, 320, 180, 410, 290]), 100);
+                  const percent = Math.floor((xp / maxVal) * 100);
+                  const isToday = index === 5; // Highlight Sat/Today beautifully
+                  return `
+                    <div class="flex flex-col items-center flex-1 space-y-2 group">
+                      <div class="w-6 rounded-t-lg relative transition-all duration-300 ${
+                        isToday 
+                          ? "bg-gradient-to-t from-pink-600 to-pink-400 group-hover:from-pink-500 group-hover:to-pink-300 shadow-[0_0_10px_rgba(236,72,153,0.3)]" 
+                          : "bg-gradient-to-t from-cyan-600 to-cyan-400 group-hover:from-cyan-500 group-hover:to-cyan-300"
+                      }" style="height: ${percent * 0.9}px">
+                        <span class="absolute -top-7 left-1/2 -translate-x-1/2 bg-slate-950 border ${
+                          isToday ? "border-pink-800 text-pink-400" : "border-cyan-800 text-cyan-400"
+                        } text-[8px] font-mono px-1 rounded opacity-0 group-hover:opacity-100 transition-opacity z-10 whitespace-nowrap">${xp} XP</span>
+                      </div>
+                      <span class="text-[9px] font-mono ${isToday ? "text-pink-400 font-bold" : "text-slate-500"}">${days[index]}</span>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+
+            <!-- Per-Habit Streak Records -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-4">
+              <div class="text-[11px] font-mono tracking-widest text-[#06b6d4] font-bold mb-4 uppercase flex items-center gap-1.5">
+                <i data-lucide="flame" class="w-4.5 h-4.5 text-amber-500 animate-pulse"></i> PER-HABIT STREAK TELEMETRY
+              </div>
+              
+              <div class="space-y-2.5">
+                ${storeState.habits.map(habit => {
+                  const s = habit.streak || 0;
+                  return `
+                    <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-950/80 border border-slate-900">
+                      <div>
+                        <div class="flex items-center gap-2">
+                          <span class="text-xs font-semibold font-display tracking-tight text-slate-100">
+                            ${
+                              habit.id === 'train_fencing'
+                                ? `Train Fencing (${getFencingTotalSeconds() / 60}m)`
+                                : habit.title
+                            }
+                          </span>
+                          <span class="text-[8px] font-mono font-bold px-1 py-0.5 rounded bg-slate-900 border border-slate-800 uppercase ${
+                            habit.category === "INTEGRITY" 
+                              ? "text-pink-400" 
+                              : habit.category === "TRAINING" 
+                              ? "text-cyan-400" 
+                              : "text-emerald-400"
+                          }">${habit.badge}</span>
+                        </div>
+                        <p class="text-[9px] text-slate-500 font-mono mt-0.5">${habit.desc}</p>
+                      </div>
+                      
+                      <div class="flex items-center gap-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 font-mono text-xs px-2.5 py-1 rounded-xl shadow-inner shrink-0 leading-none select-none">
+                        <i class="fa-solid fa-fire text-amber-500 text-[10px]"></i>
+                        <span class="font-bold">${s}</span> <span class="text-[8px] text-slate-400 font-normal">DAYS</span>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+          `;
+        } else if (currentTab === "shop") {
+          // Shop structure with current Balance
+          const systemUpgrades = [
+            {
+              id: "step_glow_effect",
+              title: "Step Glow Effect",
+              desc: "Makes fencing steps more efficient and increases speed. Therefore reduces completion of practice time by 5 minutes.",
+              cost: 150,
+              badge: "TACTICAL MOD",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779933207/screen_npwpxf.png"
+            },
+            {
+              id: "quantum_xp_overclock",
+              title: "Quantum XP Overclock",
+              desc: "Deploy temporal extraction accelerators. Accelerate your evolution through the ranks.",
+              cost: 75,
+              badge: "OVERCLOCK",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779933285/screen_gfshlx.png"
+            },
+            {
+              id: "stasis_shield_pod",
+              title: "Stasis Shield Pod",
+              desc: "Protects one habit streak from failing if a mission deadline is missed.",
+              cost: 100,
+              badge: "DEFENSIVE",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779933256/screen_e0lmwi.png"
+            },
+            {
+              id: "cybernetic_drone",
+              title: "Cybernetic Drone",
+              desc: "A floating mechanical drone that assists in data collection and habit monitoring.",
+              cost: 128,
+              badge: "COMPANION",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779933320/screen_st1ekb.png"
+            }
+          ];
+
+          const cosmeticAccessories = [
+            {
+              id: "digital_halo",
+              title: "Digital Halo",
+              desc: "An elegant floating neon cybernetic ring that is placed majestically above your avatar's head. Automatically shifts portrait size to prevent cutoffs.",
+              cost: 120,
+              badge: "COSMETIC",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779963072/Fix_smudged_lines_design_202605281710_kkgwbl.jpg"
+            },
+            {
+              id: "cyber_visor",
+              title: "Tactical Visor",
+              desc: "A high-tech digital visor worn over the eyes to feed live cognitive flow and neural telemetry metrics directly.",
+              cost: 95,
+              badge: "COSMETIC",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779961787/Refine_image_quality_same_style_202605281544-removebg-preview_bmagls.png"
+            },
+            {
+              id: "ear_piece",
+              title: "Neural Ear Piece",
+              desc: "A sleek military-tier cybernetic receiver attached securely on the side of the head to stream raw grid channels.",
+              cost: 75,
+              badge: "COSMETIC",
+              image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779961700/Refine_image_make_clear_202605281546-removebg-preview_dowub0.png"
+            }
+          ];
+
+          const itemRenderer = (item) => {
+            const isOwned = storeState.inventory.includes(item.id);
+            const isCosmeticWearable = ["digital_halo", "cyber_visor", "ear_piece"].includes(item.id);
+            const accessoryBadge = isOwned && isCosmeticWearable
+              ? `<span class="text-[7px] font-mono font-bold bg-pink-500/10 text-pink-400 px-1.5 py-0.5 rounded border border-pink-500/20 uppercase animate-pulse shrink-0">WORN ON AVATAR</span>`
+              : "";
+
+            return `
+              <div class="bg-slate-900/80 border border-slate-800/80 p-3 rounded-3xl flex items-center gap-4 hover:border-slate-700 transition">
+                <!-- Image Thumbnail -->
+                <div class="w-16 h-16 rounded-2xl bg-black border border-slate-800/60 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                  <img src="${item.image}" alt="${item.title}" class="w-full h-full object-contain bg-black rounded-xl" referrerPolicy="no-referrer">
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold font-display text-slate-100">${item.title}</span>
+                    <span class="text-[8px] font-mono font-bold bg-amber-500/10 border border-amber-500/20 px-1 py-0.5 rounded text-amber-400">${item.badge}</span>
+                    ${accessoryBadge}
+                  </div>
+                  <p class="text-[10px] text-slate-400 font-sans mt-0.5 leading-normal">${item.desc}</p>
+                </div>
+
+                <!-- Cost with tactical Purchase triggers -->
+                <div class="flex flex-col items-end shrink-0">
+                  ${isOwned ? `
+                    <span class="bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono font-bold px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-sm shrink-0">
+                      <i class="fa-solid fa-check text-xs"></i> OWNED
+                    </span>
+                  ` : `
+                    <button onclick="purchaseStoreUpgrade('${item.id}', ${item.cost})" class="px-3 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-display font-medium text-[10px] border border-amber-400/50 transition-all duration-100 ease-in-out active:scale-95 flex items-center gap-1 shadow-lg shadow-amber-900/10 shrink-0 cursor-pointer">
+                      ${item.cost} 🔮 Buy
+                    </button>
+                  `}
+                </div>
+              </div>
+            `;
+          };
+
+          rootContainer.innerHTML = `
+            <!-- The Crystal Archive Header -->
+            <div class="bg-slate-900 border border-amber-500/25 p-4 rounded-3xl mb-4 flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-mono tracking-widest text-amber-500 font-bold uppercase">THE CRYSTAL ARCHIVE</div>
+                <div class="text-[9px] font-mono text-slate-400 mt-0.5">RESOURCE ALLOCATION FOR TAC HABIT AUGMENTATION</div>
+              </div>
+
+              <!-- Active Crystals Indicator -->
+              <div class="bg-slate-950 px-3.5 py-2 rounded-2xl border border-amber-500/30 flex items-center space-x-2 shadow-inner">
+                <i class="fa-solid fa-gem text-amber-400 filter drop-shadow-[0_0_6px_rgba(245,158,11,0.5)]"></i>
+                <span class="text-xs font-mono font-bold text-amber-300" id="current-crystal-wallet">${storeState.user.crystals} 🔮</span>
+              </div>
+            </div>
+
+            <!-- Category 1: System Upgrades -->
+            <div class="mb-5">
+              <div class="text-[10px] font-mono tracking-widest text-[#06b6d4] font-black mb-3 px-1.5 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-puzzle-piece"></i> CLOUD INTERFACE AUGMENTATIONS & MODS
+              </div>
+              <div class="space-y-3">
+                ${systemUpgrades.map(itemRenderer).join("")}
+              </div>
+            </div>
+
+            <!-- Category 2: Cosmetics & Accessories -->
+            <div class="mb-4">
+              <div class="text-[10px] font-mono tracking-widest text-pink-500 font-black mb-3 px-1.5 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-wand-magic-sparkles text-pink-500 animate-pulse"></i> TACTICAL COSMETICS & ACCESSORIES (AUTO-WORN)
+              </div>
+              <div class="space-y-3">
+                ${cosmeticAccessories.map(itemRenderer).join("")}
+              </div>
+            </div>
+          `;
+        } else if (currentTab === "settings") {
+          const stats = storeState.user.stats || {};
+          const currentXp = storeState.user.xp;
+          const rankInfo = window.getRankInfo(currentXp);
+          const currentTheme = storeState.theme || "dark";
+
+          rootContainer.innerHTML = `
+            <!-- RESET CONFIRMATION BOX (INLINE MODAL) -->
+            <div id="reset-confirmation-box" class="hidden bg-red-950/90 border-2 border-red-500 rounded-3xl p-5 mb-4 text-center">
+              <div class="text-xs font-mono font-black text-red-400 uppercase tracking-widest mb-1.5"><i class="fa-solid fa-triangle-exclamation mr-1"></i> PROTOCOL PURGE CRITICAL SHIELD</div>
+              <p class="text-[10px] text-slate-205 font-mono leading-tight mb-4 uppercase">WARNING: THIS ACTION PERMANENTLY ERASES REPOSITORY HISTORICAL DATABASES AND RE-ZEROS YOUR RECORD TO CADET RECRUIT ZERO. ARE YOU ABSOLUTELY RESOLVED?</p>
+              <div class="flex gap-3">
+                <button onclick="initiateFactoryReset()" class="flex-1 bg-red-500 text-slate-950 font-display font-medium text-[10px] tracking-wider py-2.5 rounded-xl border border-red-400 active:scale-95 duration-100 uppercase cursor-pointer">
+                  YES, PURGE IT
+                </button>
+                <button onclick="cancelFactoryReset()" class="flex-1 bg-slate-800 border border-slate-700 text-slate-350 font-mono text-[10px] tracking-wide py-2.5 rounded-xl hover:text-white transition active:scale-95 duration-100 uppercase cursor-pointer">
+                  ABORT PURGE
+                </button>
+              </div>
+            </div>
+
+            <!-- THEME CONTROL CARD -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-4">
+              <div class="text-[11px] font-mono tracking-widest text-[#06b6d4] font-bold mb-3 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-palette text-cyan-400"></i> SYSTEM VISUAL PROTOCOLS
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="block text-xs font-bold text-slate-205 uppercase font-display select-none">COGNITIVE INTERACTION THEME</span>
+                  <span class="text-[9px] font-mono text-slate-400 uppercase">CURRENT: ${currentTheme === "light" ? "LIGHT BEAM INTERFACE" : "DARK COGNITIVE CANVASS"}</span>
+                </div>
+                <button onclick="toggleAppTheme()" class="bg-slate-950 hover:bg-slate-900 text-cyan-400 font-mono font-extrabold text-[10px] tracking-wider px-3.5 py-2 rounded-xl border border-cyan-500/30 active:scale-95 transition-all flex items-center gap-1.5 uppercase select-none cursor-pointer">
+                  ${currentTheme === "light" ? `<i class="fa-solid fa-moon"></i> GO DARK` : `<i class="fa-solid fa-sun text-amber-400"></i> GO LIGHT`}
+                </button>
+              </div>
+            </div>
+
+            <!-- TACTICAL DATA PURGE CARD -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-4">
+              <div class="text-[11px] font-mono tracking-widest text-pink-500 font-bold mb-3 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved text-pink-500"></i> SECURE DESTRUCTION CONSOLE
+              </div>
+              <div class="flex items-center justify-between">
+                <div>
+                  <span class="block text-xs font-bold text-slate-205 uppercase font-display select-none font-sans">REPOSITORY HARD RESET</span>
+                  <span class="text-[9px] font-mono text-slate-400 uppercase">WIPE COGNITIVE LOGS & STATUS</span>
+                </div>
+                <button onclick="triggerFactoryResetConfirmation()" class="bg-red-500/10 hover:bg-red-500/20 text-red-400 font-mono font-extrabold text-[10px] tracking-wider px-3.5 py-2 rounded-xl border border-red-500/30 active:scale-95 transition-all flex items-center gap-1.5 uppercase select-none cursor-pointer">
+                  <i class="fa-solid fa-fire"></i> PURGE STORAGE
+                </button>
+              </div>
+            </div>
+
+            <!-- THE PATH TO OPTIMIZATION (THE 5 LEVEL ROADMAP FLOWCHART) -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-4">
+              <div class="text-[11px] font-mono tracking-widest text-emerald-400 font-bold mb-3 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-route"></i> THE PATH TO OPTIMIZATION
+              </div>
+              <p class="text-[10px] text-slate-400 font-mono leading-tight mb-4 uppercase">AVATAR EVOLUTION & INTERCEPT PROTOCOLS</p>
+              
+              <!-- Lineage visualization -->
+              <div class="relative pl-6 space-y-5 border-l border-slate-800 md:pl-8 ml-2">
+                ${[
+                  { lvl: 1, title: "CADET", range: "0-500 XP", desc: "Basic system configuration onboarding directives", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939713/Screenshot_2026-05-28_at_10.41.20_pkihmu.png" },
+                  { lvl: 2, title: "OFFICER", range: "501-1000 XP", desc: "Authorized threat classification & matrix clearance", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940296/Screenshot_2026-05-28_at_10.51.08_xn5qty.png" },
+                  { lvl: 3, title: "COMBAT VANGUARD", range: "1001-2000 XP", desc: "Overclocked tactical modules initialized", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939888/1779939875766_rq9iv0.png" },
+                  { lvl: 4, title: "FULL VANGUARD", range: "2001-3500 XP", desc: "Peak quantum computing sync optimization ready", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939741/Screenshot_2026-05-28_at_10.42.05_uaixxb.png" },
+                  { lvl: 5, title: "TRANSCENDENT SINGULARITY", range: "3501+ XP", desc: "Infinite matrix sync capability & celestial rank", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940232/Image_2_ux2x45.png" }
+                ].map(r => {
+                  const isActive = rankInfo.level === r.lvl;
+                  const isCompleted = rankInfo.level > r.lvl;
+                  
+                  let stateLabel = "LOCKED";
+                  let stateColor = "text-slate-500";
+                  let nodeBg = "bg-slate-950 border-slate-800 text-slate-650";
+                  let indicatorLight = "w-2.5 h-2.5 rounded-full bg-slate-800 border border-slate-705";
+
+                  if (isActive) {
+                    stateLabel = "ACTIVE RANK";
+                    stateColor = "text-cyan-400 font-extrabold animate-pulse";
+                    nodeBg = "bg-cyan-500 border-cyan-400 text-slate-950 ring-4 ring-cyan-500/20";
+                    indicatorLight = "w-2.5 h-2.5 rounded-full bg-cyan-400 border border-cyan-300 shadow-[0_0_8px_rgba(6,182,212,1)] animate-pulse";
+                  } else if (isCompleted) {
+                    stateLabel = "COMPLETED";
+                    stateColor = "text-emerald-400 font-bold";
+                    nodeBg = "bg-emerald-500 border-emerald-400 text-slate-950";
+                    indicatorLight = "w-2.5 h-2.5 rounded-full bg-emerald-500 border border-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.5)]";
+                  }
+
+                  return `
+                    <div class="relative">
+                      <!-- Left connected indicator node icon -->
+                      <span class="absolute -left-[31px] md:-left-[39px] top-4.5 flex items-center justify-center w-5 h-5 rounded-full ${nodeBg} transition-all duration-300">
+                        ${isCompleted ? `<i class="fa-solid fa-check text-[9px]"></i>` : isActive ? `<i class="fa-solid fa-bolt text-[9px]"></i>` : `<i class="fa-solid fa-lock text-[8px]"></i>`}
+                      </span>
+                      
+                      <!-- Card details block -->
+                      <div class="flex items-center justify-between w-full p-3 rounded-2xl bg-slate-950/40 border border-slate-900/60 shadow-sm gap-3">
+                        <div class="w-12 h-12 rounded-xl border border-slate-800 bg-black flex items-center justify-center shrink-0 overflow-hidden">
+                          <img src="${r.image}" alt="${r.title}" class="w-full h-full object-contain p-0.5 bg-black ${isActive ? '' : isCompleted ? 'opacity-80' : 'opacity-35 grayscale'}">
+                        </div>
+                        <div class="flex-1">
+                          <h4 class="text-xs font-black uppercase font-display leading-tight ${isActive ? 'text-white' : isCompleted ? 'text-slate-205' : 'text-slate-500'}">LVL 0${r.lvl}: ${r.title}</h4>
+                          <span class="text-[8.5px] font-mono uppercase tracking-widest text-[#06b6d4]">${r.range}</span>
+                          <span class="block text-[9.5px] leading-tight text-[#c4b5fd] mt-1 select-none font-sans font-medium">${r.desc}</span>
+                        </div>
+                        <div class="shrink-0 flex flex-col items-end gap-1 font-mono">
+                          <span class="text-[7.5px] uppercase tracking-wide ${stateColor}">${stateLabel}</span>
+                          <div class="${indicatorLight}"></div>
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+
+            <!-- APPS INFRASTRUCTURE DATA PANEL -->
+            <div class="bg-slate-900/70 border border-slate-800/70 p-4 rounded-3xl mb-4">
+              <div class="text-[11px] font-mono tracking-widest text-slate-400 font-bold mb-3 uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-info text-slate-450"></i> CORE PLATFORM SPEC PANEL
+              </div>
+              
+              <div class="space-y-2 font-mono text-[9px] text-slate-400 leading-relaxed uppercase">
+                <div class="flex justify-between border-b border-slate-850 pb-1.5">
+                  <span class="text-slate-500">SYSTEM ARCHITECTURE</span>
+                  <span class="text-slate-202">VANGUARD HABIT MATRIX</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-850 pb-1.5">
+                  <span class="text-slate-500">OPERATIONAL COMPILE</span>
+                  <span class="text-slate-202">V3.5.0-STABLE</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-850 pb-1.5">
+                  <span class="text-slate-500">TETHERED PROFILE ID</span>
+                  <span class="text-slate-202 text-cyan-400 truncate w-32 text-right font-bold">${storeState.user.uid}</span>
+                </div>
+                <div class="flex justify-between border-b border-slate-850 pb-1.5">
+                  <span class="text-slate-500">DIAGNOSTIC TELEMETRY</span>
+                  <span class="text-emerald-400 font-bold"><i class="fa-solid fa-circle-check text-[8px] animate-pulse"></i> SECURE / SYNCED</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-500">OPERATIONAL HQ</span>
+                  <span class="text-slate-202">georgia.adidarma@gmail.com</span>
+                </div>
+              </div>
+            </div>
+          `;
+        } else if (currentTab === "profile") {
+          const stats = storeState.user.stats || {};
+          const totalXpEarned = stats.totalXp || 2450;
+          const coinsSpent = stats.coinsSpent || 450;
+          const perfectDays = stats.perfectDays || 12;
+          const bestStreak = stats.bestStreak || 14;
+
+          const rankInfo = window.getRankInfo(storeState.user.xp);
+
+          let progressPercent = 0;
+          if (storeState.user.xp <= 500) {
+            progressPercent = Math.min(100, Math.floor((storeState.user.xp / 500) * 100));
+          } else if (storeState.user.xp <= 1000) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 500) / 500) * 100));
+          } else if (storeState.user.xp <= 2000) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 1000) / 1000) * 100));
+          } else if (storeState.user.xp <= 3500) {
+            progressPercent = Math.min(100, Math.floor(((storeState.user.xp - 2000) / 1500) * 100));
+          } else {
+            progressPercent = Math.min(100, Math.max(0, Math.floor(((storeState.user.xp - 3500) / 1500) * 100)));
+          }
+
+          rootContainer.innerHTML = `
+            <!-- GORGEOUS PROFILE CARD HEAD (PORTRAIT GRAPHICS OVERLAY) -->
+            <div class="flex flex-col items-center mt-3">
+              <div class="relative w-64 h-64 rounded-2xl border-[3px] border-cyan-500/60 p-1 flex items-center justify-center bg-slate-950/80 shadow-[0_0_25px_rgba(6,182,212,0.15)] overflow-visible">
+                <!-- Glowing Cyan Neon Ring -->
+                <div class="absolute inset-0 rounded-2xl border border-cyan-400/40 animate-pulse pointer-events-none"></div>
+                <!-- Main Illustration container -->
+                <div class="w-full h-full rounded-2xl overflow-hidden bg-black border border-slate-850 relative">
+                  ${window.renderDynamicAvatarHTML(
+                    rankInfo.img || 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&q=80&w=400',
+                    "",
+                    "profile"
+                  )}
+                </div>
+                <!-- Premium Floating LVL Badge Overlay -->
+                <div class="absolute bottom-2.5 right-2.5 bg-indigo-600 border border-blue-400/40 text-[10px] font-mono font-bold tracking-widest text-[#93c5fd] px-3.5 py-1 rounded shadow-[0_0_15px_rgba(59,130,246,0.6)] uppercase animate-pulse z-20">
+                  LVL 0${rankInfo.level}
+                </div>
+              </div>
+            </div>
+
+            <!-- RANK TITLE BLOCK -->
+            <div class="text-center mt-5 px-1">
+              <div class="text-xs font-mono text-[#06b6d4] font-bold tracking-widest uppercase mb-1 leading-none">CURRENT OPERATIONAL STATUS</div>
+              <div class="text-2xl font-display font-black tracking-tight text-white leading-none uppercase">${rankInfo.rank}</div>
+              <div class="text-[9px] font-mono text-slate-400 mt-2 tracking-widest uppercase leading-tight bg-slate-900/60 inline-block px-2.5 py-1 rounded border border-slate-800">
+                DEPLOYMENT SECTOR: VANGUARD SYSTEM COMMAND hq
+              </div>
+            </div>
+
+            <!-- NEXT EVOLUTION PROGRESS SLIDER -->
+            <div class="mt-6 px-1 bg-slate-900/60 border border-slate-800/80 p-4 rounded-3xl shadow-inner">
+              <div class="flex items-center justify-between font-mono text-[9px] text-slate-300 uppercase tracking-widest font-bold">
+                <span>NEXT EVOLUTION PROGRESS</span>
+                <span class="text-right text-[#06b6d4]">${storeState.user.xp} / ${storeState.user.maxXp} XP</span>
+              </div>
+              
+              <!-- Premium Blue/Cyan Bar -->
+              <div class="w-full bg-slate-950 border border-slate-850 rounded-full h-3.5 mt-2.5 p-[2px] overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-600 via-indigo-500 to-cyan-400 h-full rounded-full shadow-[0_0_10px_rgba(6,182,212,0.5)] transition-all duration-500" style="width: ${progressPercent}%"></div>
+              </div>
+              
+              <div class="text-[9px] font-mono text-slate-400 tracking-wide mt-2 block select-none">
+                You have collected <span class="text-cyan-400 font-extrabold">${storeState.user.xp} XP</span> out of the <span class="text-emerald-400 font-extrabold">${storeState.user.maxXp} XP</span> needed to advance to the next rank tier.
+              </div>
+            </div>
+
+            <!-- TACTICAL BUTTON SHORTCUTS -->
+            <div class="grid grid-cols-2 gap-3.5 mt-6 px-1">
+              <button onclick="window.switchTab('habits')" class="bg-blue-600 hover:bg-blue-500 text-white font-display font-black text-[11px] tracking-widest py-3 rounded-xl border border-blue-400/30 uppercase active:scale-95 duration-100 shadow-[0_0_15px_rgba(59,130,246,0.25)] cursor-pointer">
+                MISSION LOG
+              </button>
+              <button onclick="window.switchTab('shop')" class="bg-slate-950 hover:bg-slate-900 text-cyan-400 font-display font-black text-[11px] tracking-widest py-3 rounded-xl border border-cyan-500/25 uppercase active:scale-95 duration-100 transition-colors cursor-pointer">
+                UPGRADES
+              </button>
+            </div>
+
+            <!-- 2x2 TELEMETRY GRID FROM MOCKUP -->
+            <div class="grid grid-cols-2 gap-3 mt-6 px-1">
+              <!-- Trophy / Total XP -->
+              <div class="bg-[#090e1a]/95 border border-slate-900 p-4 rounded-2xl flex flex-col justify-between h-24 shadow-inner">
+                <i class="fa-solid fa-award text-cyan-400 text-sm"></i>
+                <div class="text-left">
+                  <span class="block text-[8px] font-mono font-bold tracking-wider text-slate-500 uppercase leading-none">TOTAL XP</span>
+                  <span class="block text-xl font-mono font-bold text-slate-100 mt-1 leading-none">${totalXpEarned.toLocaleString()}</span>
+                </div>
+              </div>
+
+              <!-- Perfect Days -->
+              <div class="bg-[#090e1a]/95 border border-slate-900 p-4 rounded-2xl flex flex-col justify-between h-24 shadow-inner">
+                <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
+                <div class="text-left">
+                  <span class="block text-[8px] font-mono font-bold tracking-wider text-slate-500 uppercase leading-none">PERFECT DAYS</span>
+                  <span class="block text-xl font-mono font-bold text-slate-100 mt-1 leading-none">${perfectDays}</span>
+                </div>
+              </div>
+
+              <!-- Current Streak -->
+              <div class="bg-[#090e1a]/95 border border-slate-900 p-4 rounded-2xl flex flex-col justify-between h-24 shadow-inner">
+                <i class="fa-solid fa-bolt text-pink-500 text-sm animate-pulse"></i>
+                <div class="text-left">
+                  <span class="block text-[8px] font-mono font-bold tracking-wider text-slate-500 uppercase leading-none">CURRENT STREAK</span>
+                  <span class="block text-xl font-mono font-bold text-slate-100 mt-1 leading-none">${bestStreak} days</span>
+                </div>
+              </div>
+
+              <!-- Crystals balance -->
+              <div class="bg-[#090e1a]/95 border border-slate-900 p-4 rounded-2xl flex flex-col justify-between h-24 shadow-inner">
+                <i class="fa-solid fa-gem text-indigo-400 text-sm"></i>
+                <div class="text-left">
+                  <span class="block text-[8px] font-mono font-bold tracking-wider text-slate-500 uppercase leading-none">CRYSTALS</span>
+                  <span class="block text-xl font-mono font-bold text-slate-100 mt-1 leading-none">${storeState.user.crystals} 🔮</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVOLUTION PATH FROM MOCKUP -->
+            <div class="mt-8 border border-slate-900/60 bg-slate-950/40 p-5 rounded-3xl mx-1 select-none">
+              <div class="text-[11px] font-mono tracking-widest text-[#06b6d4] font-bold uppercase text-center mb-5 flex items-center justify-center gap-2">
+                <span class="h-px w-8 bg-cyan-950/20"></span> VANGUARD EVOLUTION PATH <span class="h-px w-8 bg-cyan-950/20"></span>
+              </div>
+
+              <!-- Evolution Roadmap Cards -->
+              <div class="space-y-4">
+                ${[
+                  { id: "cadet", lvl: 1, title: "CADET", range: "0-500 XP", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939713/Screenshot_2026-05-28_at_10.41.20_pkihmu.png" },
+                  { id: "officer", lvl: 2, title: "OFFICER", range: "501-1000 XP", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940296/Screenshot_2026-05-28_at_10.51.08_xn5qty.png" },
+                  { id: "combat_vanguard", lvl: 3, title: "COMBAT VANGUARD", range: "1001-2000 XP", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939888/1779939875766_rq9iv0.png" },
+                  { id: "full_vanguard", lvl: 4, title: "FULL VANGUARD", range: "2001-3500 XP", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779939741/Screenshot_2026-05-28_at_10.42.05_uaixxb.png" },
+                  { id: "transcendent_singularity", lvl: 5, title: "TRANSCENDENT SINGULARITY", range: "3501+ XP", image: "https://res.cloudinary.com/dlbr6gk6w/image/upload/v1779940232/Image_2_ux2x45.png" }
+                ].map(r => {
+                  const isActive = rankInfo.level === r.lvl;
+                  const isCompleted = rankInfo.level > r.lvl;
+                  const isLocked = rankInfo.level < r.lvl;
+                  
+                  let stateLabel = "LOCKED";
+                  let stateColor = "text-slate-500";
+                  let borderClass = "border-slate-900";
+                  let opacityClass = "opacity-40 grayscale";
+                  let indicatorBg = "bg-slate-900 border-slate-700";
+
+                  if (isActive) {
+                    stateLabel = "ACTIVE RANK";
+                    stateColor = "text-cyan-400 font-extrabold animate-pulse";
+                    borderClass = "border-cyan-400 bg-slate-900/90 shadow-[0_0_12px_rgba(6,182,212,0.15)]";
+                    opacityClass = "";
+                    indicatorBg = "bg-cyan-400 border-cyan-400 shadow-[0_0_8px_rgba(6,182,212,0.8)] animate-pulse";
+                  } else if (isCompleted) {
+                    stateLabel = "COMPLETED";
+                    stateColor = "text-emerald-400 font-bold";
+                    borderClass = "border-emerald-500/40 bg-slate-900/60";
+                    opacityClass = "opacity-75";
+                    indicatorBg = "bg-emerald-500 border-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]";
+                  }
+
+                  return `
+                    <div class="flex items-center gap-3.5 p-3 rounded-2xl border ${borderClass} transition-all duration-300">
+                      <!-- Left side rank avatar -->
+                      <div class="w-16 h-12 rounded-xl overflow-hidden shrink-0 border border-slate-800 p-0.5 bg-black flex items-center justify-center">
+                        <img src="${r.image}" alt="${r.title}" class="w-full h-full object-contain rounded-[8px] bg-black ${opacityClass}">
+                      </div>
+                      
+                      <!-- Center text detail -->
+                      <div class="flex-1">
+                        <div class="text-[7.5px] font-mono leading-none tracking-widest text-slate-500 block uppercase">LVL 0${r.lvl} • ${r.range}</div>
+                        <span class="text-[11.5px] font-display font-black tracking-tight text-white leading-tight block mt-1 uppercase">${r.title}</span>
+                      </div>
+
+                      <!-- Right state badge -->
+                      <div class="text-right flex flex-col items-end shrink-0 gap-1.5 font-sans">
+                        <span class="text-[7.5px] font-mono uppercase tracking-wide ${stateColor}">${stateLabel}</span>
+                        <div class="w-3.5 h-3.5 rounded-full border ${indicatorBg}"></div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </div>
+            </div>
+
+            <!-- SYSTEM CONNECTOR SETTINGS PANEL (Preserving Auth and Cloud sync features cleanly) -->
+            <div class="mt-6 mx-1 p-4 rounded-3xl bg-slate-900/40 border border-slate-900 select-none">
+              <div class="flex items-center justify-between mb-2 cursor-pointer" onclick="document.getElementById('profile-sync-panel').classList.toggle('hidden')">
+                <span class="text-[9px] font-mono tracking-widest text-slate-500 font-bold uppercase"><i class="fa-solid fa-fingerprint mr-1"></i> COGNITIVE RECEPTOR SECURITY</span>
+                <i class="fa-solid fa-chevron-down text-xs text-slate-500"></i>
+              </div>
+              
+              <div id="profile-sync-panel" class="space-y-3 hidden mt-3 pt-3 border-t border-slate-900">
+                ${authUser ? `
+                  <div class="flex items-center space-x-3.5 p-2 rounded-xl bg-slate-950/80 border border-cyan-500/10">
+                    <div class="w-10 h-10 rounded-xl overflow-hidden bg-slate-950">
+                      <img src="${authUser.photoURL || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=120'}" referrerpolicy="no-referrer" alt="Authorised Profile" class="w-full h-full object-cover">
+                    </div>
+                    <div>
+                      <h3 class="text-xs font-bold font-display text-slate-100 uppercase tracking-tight">${authUser.displayName}</h3>
+                      <p class="text-[9px] text-cyan-455 font-mono">${authUser.email}</p>
+                    </div>
+                  </div>
+                  
+                  <button onclick="logoutAuth()" class="w-full py-2.5 rounded-xl border border-pink-500/20 text-pink-500 font-display font-medium text-[10px] tracking-wider bg-pink-950/20 hover:bg-pink-950/30 transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-from-bracket"></i> DISCONNECT CLOUD PROTOCOL
+                  </button>
+                ` : `
+                  <div class="text-center py-2">
+                    <p class="text-[9px] text-slate-400 font-mono mb-3 leading-normal">
+                      Local standalone mode secure. Connect Firebase to secure analytics metrics across terminals automatically.
+                    </p>
+                    <button onclick="window.loginAuth()" class="w-full py-2.5 bg-slate-200 hover:bg-white text-slate-950 rounded-xl font-display font-bold text-[10px] tracking-wider transition-all active:scale-95 flex items-center justify-center gap-1.5 shadow-md border-0 pointer-events-auto cursor-pointer">
+                      <i class="fa-brands fa-google text-slate-950"></i> CONNECT AUTH ENTITY
+                    </button>
+                  </div>
+                `}
+              </div>
+            </div>
+          `;
+        }
+
+        // Trigger Lucide Icon parsing automatically on template mount
+        setTimeout(() => {
+          lucide.createIcons();
+        }, 30);
+      }
+
+      // Login trigger
+      window.loginAuth = async function() {
+        if (!isConfigValid) {
+          window.triggerToast("⚠️ Authentication disabled in Local fallback mode. Please configure active firebaseConfig credentials!", false);
+          return;
+        }
+
+        try {
+          const res = await signInWithPopup(auth, googleProvider);
+          const user = res.user;
+          authUser = user;
+
+          storeState.user.displayName = user.displayName;
+          storeState.user.email = user.email;
+          storeState.user.photoURL = user.photoURL;
+          storeState.user.uid = user.uid;
+
+          // Attempt loading their private profile record back
+          const userDocRef = doc(db, "users", user.uid);
+          const record = await getDoc(userDocRef);
+
+          if (record.exists()) {
+            const data = record.data();
+            storeState.user.xp = data.xp ?? storeState.user.xp;
+            storeState.user.level = data.level ?? storeState.user.level;
+            storeState.user.crystals = data.crystals ?? storeState.user.crystals;
+            storeState.user.integrity = data.integrity ?? storeState.user.integrity;
+            storeState.user.stats = data.stats ?? storeState.user.stats;
+            storeState.habits = data.habits ?? storeState.habits;
+            storeState.inventory = data.inventory ?? storeState.inventory;
+          }
+
+          window.triggerToast(`Welcome back Commander, ${user.displayName}!`, true);
+          updateTelemetry();
+          saveCurrentState();
+          loadCurrentView();
+        } catch (e) {
+          window.triggerToast(`Connection failed: ${e.message}`, false);
+          console.error(e);
+        }
+      };
+
+      // Logout trigger
+      window.logoutAuth = async function() {
+        if (!isConfigValid || !auth) return;
+
+        try {
+          await signOut(auth);
+          authUser = null;
+          
+          storeState = JSON.parse(JSON.stringify(defaultState));
+          localStorage.removeItem(DEFAULT_PERSISTENCE_KEY);
+          
+          window.triggerToast("Cloud session terminated smoothly.", false);
+          updateTelemetry();
+          loadCurrentView();
+        } catch (e) {
+          window.triggerToast("Disconnection failed cleanly.", false);
+        }
+      };
+
+      // Check permissions status
+      window.triggerCredentialsMock = function() {
+        window.triggerToast("🔒 Zero-trust credentials mapping is fully secured locally.", true);
+      };
+
+      // Set up simple system live clock
+      function initClock() {
+        const tacticalClock = document.getElementById("tactical-clock");
+        
+        function tick() {
+          const now = new Date();
+          const hr = String(now.getHours()).padStart(2, "0");
+          const mn = String(now.getMinutes()).padStart(2, "0");
+          const sc = String(now.getSeconds()).padStart(2, "0");
+          
+          if (tacticalClock) {
+            tacticalClock.textContent = `${hr}:${mn}:${sc}`;
+          }
+
+          // Daily reset countdown ticking
+          const resetTimerEl = document.getElementById("daily-reset-countdown");
+          if (resetTimerEl) {
+            const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+            const diffMs = nextMidnight.getTime() - now.getTime();
+            const hours = Math.floor(diffMs / 3600000);
+            const minutes = Math.floor((diffMs % 3600000) / 60000);
+            const seconds = Math.floor((diffMs % 60000) / 1000);
+            resetTimerEl.textContent = `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+          }
+
+          // Automated Reset Checker
+          const todayStr = now.toDateString();
+          if (!storeState.lastResetDate) {
+            storeState.lastResetDate = todayStr;
+            saveCurrentState();
+          } else if (storeState.lastResetDate !== todayStr) {
+            window.triggerDailyReset(todayStr);
+          }
+        }
+        
+        setInterval(tick, 1000);
+        tick();
+      }
+
+      // Auth listener integration
+      if (isConfigValid && auth) {
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            authUser = user;
+            storeState.user.displayName = user.displayName;
+            storeState.user.email = user.email;
+            storeState.user.photoURL = user.photoURL;
+            storeState.user.uid = user.uid;
+            
+            // Sync listen snapshot if preferred, but we will read once
+            getDoc(doc(db, "users", user.uid)).then(record => {
+              if (record.exists()) {
+                const data = record.data();
+                storeState.user.xp = data.xp ?? storeState.user.xp;
+                storeState.user.level = data.level ?? storeState.user.level;
+                storeState.user.crystals = data.crystals ?? storeState.user.crystals;
+                storeState.user.integrity = data.integrity ?? storeState.user.integrity;
+                storeState.user.stats = data.stats ?? storeState.user.stats;
+                storeState.habits = data.habits ?? storeState.habits;
+                storeState.inventory = data.inventory ?? storeState.inventory;
+                updateTelemetry();
+                loadCurrentView();
+              }
+            });
+          } else {
+            authUser = null;
+          }
+          updateTelemetry();
+        });
+      }
+
+      // Initial Bootstrap load
+      document.addEventListener("DOMContentLoaded", () => {
+        loadPersistedState();
+        initClock();
+        loadCurrentView();
+      });
+    </script>
+  </body>
+</html>
